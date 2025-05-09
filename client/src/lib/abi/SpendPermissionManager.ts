@@ -1,440 +1,414 @@
-export const spendPermissionManagerAddress = "0x00000000Fc1237824fb747aBDE0FF18990E59b2e";
+// Address of the SpendPermissionManager contract on Base Sepolia
+export const spendPermissionManagerAddress = "0xB1d702a952d3B3c5892A39C0A375C10627E67446";
 
-export const spendPermissionManagerAbi = [
+// SpendPermissionManager ABI
+export const spendPermissionManagerABI = [
   {
-    type: "constructor",
-    inputs: [],
-    stateMutability: "nonpayable"
+    "inputs": [],
+    "name": "InvalidPermission",
+    "type": "error"
   },
   {
-    type: "function",
-    name: "authorized",
-    inputs: [
-      {
-        name: "",
-        type: "address",
-        internalType: "address"
-      },
-      {
-        name: "",
-        type: "address",
-        internalType: "address"
-      },
-      {
-        name: "",
-        type: "address",
-        internalType: "address"
-      }
-    ],
-    outputs: [
-      {
-        name: "allowance",
-        type: "uint160",
-        internalType: "uint160"
-      },
-      {
-        name: "validAfter",
-        type: "uint48",
-        internalType: "uint48"
-      },
-      {
-        name: "validUntil",
-        type: "uint48",
-        internalType: "uint48"
-      },
-      {
-        name: "consumedInPeriod",
-        type: "uint160",
-        internalType: "uint160"
-      },
-      {
-        name: "periodStart",
-        type: "uint48",
-        internalType: "uint48"
-      },
-      {
-        name: "period",
-        type: "uint48",
-        internalType: "uint48"
-      }
-    ],
-    stateMutability: "view"
+    "inputs": [],
+    "name": "InvalidSignature",
+    "type": "error"
   },
   {
-    type: "function",
-    name: "authorize",
-    inputs: [
+    "inputs": [],
+    "name": "PermissionExceeded",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "PermissionExpired",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "PermissionUsed",
+    "type": "error"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
       {
-        name: "permission",
-        type: "tuple",
-        internalType: "struct SpendPermission",
-        components: [
+        "indexed": true,
+        "internalType": "address",
+        "name": "spender",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "token",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "account",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint160",
+        "name": "amount",
+        "type": "uint160"
+      }
+    ],
+    "name": "SpendPermit",
+    "type": "event"
+  },
+  {
+    "inputs": [],
+    "name": "DOMAIN_SEPARATOR",
+    "outputs": [
+      {
+        "internalType": "bytes32",
+        "name": "",
+        "type": "bytes32"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "spender",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "token",
+        "type": "address"
+      }
+    ],
+    "name": "getRemainingAllowance",
+    "outputs": [
+      {
+        "internalType": "uint160",
+        "name": "amount",
+        "type": "uint160"
+      },
+      {
+        "internalType": "uint48",
+        "name": "valid",
+        "type": "uint48"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "components": [
           {
-            name: "account",
-            type: "address",
-            internalType: "address"
+            "internalType": "address",
+            "name": "account",
+            "type": "address"
           },
           {
-            name: "spender",
-            type: "address",
-            internalType: "address"
+            "internalType": "address",
+            "name": "spender",
+            "type": "address"
           },
           {
-            name: "token",
-            type: "address",
-            internalType: "address"
+            "internalType": "address",
+            "name": "token",
+            "type": "address"
           },
           {
-            name: "allowance",
-            type: "uint160",
-            internalType: "uint160"
+            "internalType": "uint160",
+            "name": "allowance",
+            "type": "uint160"
           },
           {
-            name: "period",
-            type: "uint48",
-            internalType: "uint48"
+            "internalType": "uint48",
+            "name": "period",
+            "type": "uint48"
           },
           {
-            name: "start",
-            type: "uint48",
-            internalType: "uint48"
+            "internalType": "uint48",
+            "name": "start",
+            "type": "uint48"
           },
           {
-            name: "end",
-            type: "uint48",
-            internalType: "uint48"
+            "internalType": "uint48",
+            "name": "end",
+            "type": "uint48"
           },
           {
-            name: "salt",
-            type: "uint256",
-            internalType: "uint256"
+            "internalType": "uint256",
+            "name": "salt",
+            "type": "uint256"
           },
           {
-            name: "extraData",
-            type: "bytes",
-            internalType: "bytes"
+            "internalType": "bytes",
+            "name": "extraData",
+            "type": "bytes"
           }
-        ]
+        ],
+        "internalType": "struct SpendPermissionManager.SpendPermission",
+        "name": "permission",
+        "type": "tuple"
       },
       {
-        name: "signature",
-        type: "bytes",
-        internalType: "bytes"
-      }
-    ],
-    outputs: [],
-    stateMutability: "nonpayable"
-  },
-  {
-    type: "function",
-    name: "chainId",
-    inputs: [],
-    outputs: [
-      {
-        name: "id",
-        type: "uint256",
-        internalType: "uint256"
-      }
-    ],
-    stateMutability: "view"
-  },
-  {
-    type: "function",
-    name: "deauthorize",
-    inputs: [
-      {
-        name: "account",
-        type: "address",
-        internalType: "address"
+        "internalType": "uint160",
+        "name": "amount",
+        "type": "uint160"
       },
       {
-        name: "spender",
-        type: "address",
-        internalType: "address"
-      },
-      {
-        name: "token",
-        type: "address",
-        internalType: "address"
+        "internalType": "bytes",
+        "name": "signature",
+        "type": "bytes"
       }
     ],
-    outputs: [],
-    stateMutability: "nonpayable"
+    "name": "getRequiredAllowancePermitCalldata",
+    "outputs": [
+      {
+        "internalType": "bytes",
+        "name": "calldata_",
+        "type": "bytes"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
   },
   {
-    type: "function",
-    name: "domainSeparator",
-    inputs: [],
-    outputs: [
+    "inputs": [
       {
-        name: "separator",
-        type: "bytes32",
-        internalType: "bytes32"
-      }
-    ],
-    stateMutability: "view"
-  },
-  {
-    type: "function",
-    name: "hasAuthorization",
-    inputs: [
-      {
-        name: "account",
-        type: "address",
-        internalType: "address"
-      },
-      {
-        name: "spender",
-        type: "address",
-        internalType: "address"
-      },
-      {
-        name: "token",
-        type: "address",
-        internalType: "address"
-      }
-    ],
-    outputs: [
-      {
-        name: "authorized",
-        type: "bool",
-        internalType: "bool"
-      }
-    ],
-    stateMutability: "view"
-  },
-  {
-    type: "function",
-    name: "hashPermission",
-    inputs: [
-      {
-        name: "permission",
-        type: "tuple",
-        internalType: "struct SpendPermission",
-        components: [
+        "components": [
           {
-            name: "account",
-            type: "address",
-            internalType: "address"
+            "internalType": "address",
+            "name": "account",
+            "type": "address"
           },
           {
-            name: "spender",
-            type: "address",
-            internalType: "address"
+            "internalType": "address",
+            "name": "spender",
+            "type": "address"
           },
           {
-            name: "token",
-            type: "address",
-            internalType: "address"
+            "internalType": "address",
+            "name": "token",
+            "type": "address"
           },
           {
-            name: "allowance",
-            type: "uint160",
-            internalType: "uint160"
+            "internalType": "uint160",
+            "name": "allowance",
+            "type": "uint160"
           },
           {
-            name: "period",
-            type: "uint48",
-            internalType: "uint48"
+            "internalType": "uint48",
+            "name": "period",
+            "type": "uint48"
           },
           {
-            name: "start",
-            type: "uint48",
-            internalType: "uint48"
+            "internalType": "uint48",
+            "name": "start",
+            "type": "uint48"
           },
           {
-            name: "end",
-            type: "uint48",
-            internalType: "uint48"
+            "internalType": "uint48",
+            "name": "end",
+            "type": "uint48"
           },
           {
-            name: "salt",
-            type: "uint256",
-            internalType: "uint256"
+            "internalType": "uint256",
+            "name": "salt",
+            "type": "uint256"
           },
           {
-            name: "extraData",
-            type: "bytes",
-            internalType: "bytes"
+            "internalType": "bytes",
+            "name": "extraData",
+            "type": "bytes"
           }
-        ]
-      }
-    ],
-    outputs: [
+        ],
+        "internalType": "struct SpendPermissionManager.SpendPermission",
+        "name": "permission",
+        "type": "tuple"
+      },
       {
-        name: "",
-        type: "bytes32",
-        internalType: "bytes32"
+        "internalType": "bytes",
+        "name": "signature",
+        "type": "bytes"
       }
     ],
-    stateMutability: "view"
+    "name": "permitSpend",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
   },
   {
-    type: "function",
-    name: "nonces",
-    inputs: [
+    "inputs": [
       {
-        name: "",
-        type: "address",
-        internalType: "address"
+        "components": [
+          {
+            "internalType": "address",
+            "name": "account",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "spender",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "token",
+            "type": "address"
+          },
+          {
+            "internalType": "uint160",
+            "name": "allowance",
+            "type": "uint160"
+          },
+          {
+            "internalType": "uint48",
+            "name": "period",
+            "type": "uint48"
+          },
+          {
+            "internalType": "uint48",
+            "name": "start",
+            "type": "uint48"
+          },
+          {
+            "internalType": "uint48",
+            "name": "end",
+            "type": "uint48"
+          },
+          {
+            "internalType": "uint256",
+            "name": "salt",
+            "type": "uint256"
+          },
+          {
+            "internalType": "bytes",
+            "name": "extraData",
+            "type": "bytes"
+          }
+        ],
+        "internalType": "struct SpendPermissionManager.SpendPermission",
+        "name": "permission",
+        "type": "tuple"
       },
       {
-        name: "",
-        type: "bytes32",
-        internalType: "bytes32"
-      }
-    ],
-    outputs: [
+        "internalType": "uint160",
+        "name": "amount",
+        "type": "uint160"
+      },
       {
-        name: "",
-        type: "bool",
-        internalType: "bool"
+        "internalType": "bytes",
+        "name": "signature",
+        "type": "bytes"
       }
     ],
-    stateMutability: "view"
+    "name": "permitSpendWithAmount",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
   },
   {
-    type: "function",
-    name: "spend",
-    inputs: [
+    "inputs": [
       {
-        name: "account",
-        type: "address",
-        internalType: "address"
+        "internalType": "address",
+        "name": "",
+        "type": "address"
       },
       {
-        name: "token",
-        type: "address",
-        internalType: "address"
+        "internalType": "address",
+        "name": "",
+        "type": "address"
       },
       {
-        name: "amount",
-        type: "uint160",
-        internalType: "uint160"
-      },
-      {
-        name: "to",
-        type: "address",
-        internalType: "address"
-      },
-      {
-        name: "data",
-        type: "bytes",
-        internalType: "bytes"
+        "internalType": "address",
+        "name": "",
+        "type": "address"
       }
     ],
-    outputs: [
+    "name": "spent",
+    "outputs": [
       {
-        name: "",
-        type: "bytes",
-        internalType: "bytes"
+        "internalType": "uint160",
+        "name": "amount",
+        "type": "uint160"
+      },
+      {
+        "internalType": "uint48",
+        "name": "lastUpdated",
+        "type": "uint48"
       }
     ],
-    stateMutability: "nonpayable"
+    "stateMutability": "view",
+    "type": "function"
   },
   {
-    type: "event",
-    name: "Authorized",
-    inputs: [
+    "inputs": [
       {
-        name: "account",
-        type: "address",
-        indexed: true,
-        internalType: "address"
+        "components": [
+          {
+            "internalType": "address",
+            "name": "account",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "spender",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "token",
+            "type": "address"
+          },
+          {
+            "internalType": "uint160",
+            "name": "allowance",
+            "type": "uint160"
+          },
+          {
+            "internalType": "uint48",
+            "name": "period",
+            "type": "uint48"
+          },
+          {
+            "internalType": "uint48",
+            "name": "start",
+            "type": "uint48"
+          },
+          {
+            "internalType": "uint48",
+            "name": "end",
+            "type": "uint48"
+          },
+          {
+            "internalType": "uint256",
+            "name": "salt",
+            "type": "uint256"
+          },
+          {
+            "internalType": "bytes",
+            "name": "extraData",
+            "type": "bytes"
+          }
+        ],
+        "internalType": "struct SpendPermissionManager.SpendPermission",
+        "name": "permission",
+        "type": "tuple"
       },
       {
-        name: "spender",
-        type: "address",
-        indexed: true,
-        internalType: "address"
-      },
-      {
-        name: "token",
-        type: "address",
-        indexed: true,
-        internalType: "address"
-      },
-      {
-        name: "allowance",
-        type: "uint160",
-        indexed: false,
-        internalType: "uint160"
-      },
-      {
-        name: "validAfter",
-        type: "uint48",
-        indexed: false,
-        internalType: "uint48"
-      },
-      {
-        name: "validUntil",
-        type: "uint48",
-        indexed: false,
-        internalType: "uint48"
-      },
-      {
-        name: "periodSeconds",
-        type: "uint48",
-        indexed: false,
-        internalType: "uint48"
+        "internalType": "bytes",
+        "name": "signature",
+        "type": "bytes"
       }
     ],
-    anonymous: false
-  },
-  {
-    type: "event",
-    name: "Deauthorized",
-    inputs: [
-      {
-        name: "account",
-        type: "address",
-        indexed: true,
-        internalType: "address"
-      },
-      {
-        name: "spender",
-        type: "address",
-        indexed: true,
-        internalType: "address"
-      },
-      {
-        name: "token",
-        type: "address",
-        indexed: true,
-        internalType: "address"
-      }
-    ],
-    anonymous: false
-  },
-  {
-    type: "event",
-    name: "Spent",
-    inputs: [
-      {
-        name: "account",
-        type: "address",
-        indexed: true,
-        internalType: "address"
-      },
-      {
-        name: "spender",
-        type: "address",
-        indexed: true,
-        internalType: "address"
-      },
-      {
-        name: "token",
-        type: "address",
-        indexed: true,
-        internalType: "address"
-      },
-      {
-        name: "amount",
-        type: "uint160",
-        indexed: false,
-        internalType: "uint160"
-      }
-    ],
-    anonymous: false
+    "name": "validatePermitSpend",
+    "outputs": [],
+    "stateMutability": "view",
+    "type": "function"
   }
-] as const;
+];

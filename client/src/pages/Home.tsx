@@ -1,42 +1,44 @@
 import { useEffect } from "react";
-import { useAccount } from "wagmi";
 import Header from "@/components/Header";
-import WalletConnect from "@/components/WalletConnect";
-import MessageSigning from "@/components/MessageSigning";
-import SendTransaction from "@/components/SendTransaction";
+import WalletConnection from "@/components/WalletConnection";
 import SpendLimits from "@/components/SpendLimits";
-import Footer from "@/components/Footer";
+import WalletActions from "@/components/WalletActions";
+import InfoSection from "@/components/InfoSection";
+import { useAccount } from "wagmi";
 
 export default function Home() {
+  // Check the connection status when the component mounts
   const account = useAccount();
-  const isConnected = account.status === "connected";
 
-  // Set page title
+  // Update the page title when the component mounts
   useEffect(() => {
-    document.title = "Smart Wallet Demo | Base";
+    document.title = "Smart Wallet Sub Account Demo";
   }, []);
 
   return (
-    <div className="flex flex-col min-h-screen bg-background">
-      <Header />
-      
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex-grow">
-        <div className="mb-6">
-          <WalletConnect />
-        </div>
+    <div className="min-h-screen bg-[#FAFAFA]">
+      <div className="mx-auto max-w-7xl">
+        <Header />
         
-        {isConnected && (
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <MessageSigning />
-            <SendTransaction />
+        <main className="p-6">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {/* Wallet Connection Section */}
+            <div className="lg:col-span-1">
+              <WalletConnection />
+            </div>
+            
+            {/* Sub Account Section */}
             <div className="lg:col-span-2">
-              <SpendLimits />
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <SpendLimits />
+                <WalletActions />
+              </div>
             </div>
           </div>
-        )}
-      </main>
-      
-      <Footer />
+          
+          <InfoSection />
+        </main>
+      </div>
     </div>
   );
 }

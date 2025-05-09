@@ -1,81 +1,59 @@
-import { useState, useEffect } from "react";
-import { useAccount, useSignTypedData, useChainId } from "wagmi";
-import { useQuery } from "@tanstack/react-query";
-import { Address, Hex, parseEther, toHex } from "viem";
-import { Card, CardContent } from "@/components/ui/card";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Progress } from "@/components/ui/progress";
-import { Lock, Unlock, ArrowLeftRight, Info } from "lucide-react";
-import { apiRequest } from "@/lib/queryClient";
-import { formatDate, formatTransactionUrl, formatEther } from "@/lib/utils";
+import { Card, CardContent } from "@/components/ui/card";
+import { useAccount, useConnect, useSignTypedData } from "wagmi";
+import { Address, Hex, parseUnits } from "viem";
+import { useQuery } from "@tanstack/react-query";
 import { spendPermissionManagerAddress } from "@/lib/abi/SpendPermissionManager";
 
-interface SubscriptionState {
-  isSubscribed: boolean;
-  signature?: Hex;
-  spendPermission?: any;
-  transactions: Array<{
-    hash: string;
-    amount: string;
-    timestamp: string;
-  }>;
-  usedToday: string;
-}
-
 export default function SpendLimits() {
-  const chainId = useChainId();
-  const account = useAccount();
+  const [isDisabled, setIsDisabled] = useState(false);
+  const [signature, setSignature] = useState<Hex>();
+  const [transactions, setTransactions] = useState<Array<{hash: string, timestamp: number}>>([]);
+  const [spendPermission, setSpendPermission] = useState<object>();
+
   const { signTypedDataAsync } = useSignTypedData();
-  const [state, setState] = useState<SubscriptionState>({
-    isSubscribed: false,
-    transactions: [],
-    usedToday: "0",
-  });
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const account = useAccount();
+  const chainId = account.chainId || 84532; // Default to Base Sepolia if not available
+  const { connectAsync } = useConnect();
+  const connectors = useConnect().connectors;
 
-  // Query to check if already subscribed
-  const { data: subscriptionData, refetch: refetchSubscription } = useQuery({
-    queryKey: ['/api/subscription', account.address],
-    enabled: !!account.address,
+  const { data, error, isLoading, refetch } = useQuery({
+    queryKey: ["collectSubscription"],
+    queryFn: handleCollectSubscription,
+    refetchOnWindowFocus: false,
+    enabled: !!signature,
   });
 
-  useEffect(() => {
-    if (subscriptionData) {
-      setState((prev) => ({
-        ...prev,
-        isSubscribed: !!subscriptionData.isSubscribed,
-        transactions: subscriptionData.transactions || [],
-        usedToday: subscriptionData.usedToday || "0",
-        signature: subscriptionData.signature,
-        spendPermission: subscriptionData.spendPermission,
-      }));
-    }
-  }, [subscriptionData]);
-
-  const handleSubscribe = async () => {
-    setIsLoading(true);
-    setError(null);
-    
-    try {
-      if (!account.address) {
-        throw new Error("Wallet not connected");
+  async function handleSubmit() {
+    setIsDisabled(true);
+    let accountAddress = account?.addresses?.primaryAddress;
+    if (!accountAddress) {
+      try {
+        const requestAccounts = await connectAsync({
+          connector: connectors[0],
+        });
+        accountAddress = requestAccounts.accounts[0] as Address;
+      } catch (e) {
+        console.error(e);
+        setIsDisabled(false);
+        return;
       }
+    }
 
-      // Define a SpendPermission to request from the user
-      const spendPermission = {
-        account: account.address as Address,
-        spender: process.env.NEXT_PUBLIC_SPENDER_ADDRESS as Address || "0x1234567890123456789012345678901234567890",
-        token: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE" as Address, // ETH
-        allowance: parseEther("10"),
-        period: 86400, // 24 hours in seconds
-        start: 0, // Start immediately
-        end: 281474976710655, // Max uint48
-        salt: BigInt(0),
-        extraData: "0x" as Hex,
-      };
+    const spendPermission = {
+      account: accountAddress, // User wallet address
+      spender: process.env.NEXT_PUBLIC_SPENDER_ADDRESS as Address || "0x1234567890123456789012345678901234567890", // Spender address
+      token: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE" as Address, // ETH (EIP-7528 standard)
+      allowance: parseUnits("0.01", 18), // 0.01 ETH
+      period: 86400, // seconds in a day
+      start: 0, // unix timestamp
+      end: 281474976710655, // max uint48
+      salt: BigInt(0),
+      extraData: "0x" as Hex,
+    };
 
-      // Sign the spend permission
+    try {
       const signature = await signTypedDataAsync({
         domain: {
           name: "Spend Limit Manager",
@@ -99,234 +77,142 @@ export default function SpendLimits() {
         primaryType: "SpendPermission",
         message: spendPermission,
       });
-
-      // Register the subscription on the server
-      await apiRequest('POST', '/api/subscription', {
-        spendPermission: {
-          ...spendPermission,
-          allowance: spendPermission.allowance.toString(),
-          salt: spendPermission.salt.toString(),
-        },
-        signature
-      });
-
-      setState((prev) => ({
-        ...prev,
-        isSubscribed: true,
-        signature,
-        spendPermission,
-      }));
-
-      await refetchSubscription();
-    } catch (err: any) {
-      setError(err.message || "Failed to subscribe");
-      console.error(err);
-    } finally {
-      setIsLoading(false);
+      setSpendPermission(spendPermission);
+      setSignature(signature);
+    } catch (e) {
+      console.error(e);
     }
-  };
+    setIsDisabled(false);
+  }
 
-  const handleCollectSubscription = async () => {
-    setIsLoading(true);
-    setError(null);
-    
+  async function handleCollectSubscription() {
+    setIsDisabled(true);
+    let data;
     try {
-      if (!state.signature || !state.spendPermission) {
-        throw new Error("No valid subscription found");
-      }
-
-      const response = await apiRequest('POST', '/api/collect', {
-        spendPermission: {
-          ...state.spendPermission,
-          allowance: state.spendPermission.allowance.toString(),
-          salt: state.spendPermission.salt.toString(),
+      const replacer = (key: string, value: any) => {
+        if (typeof value === "bigint") {
+          return value.toString();
+        }
+        return value;
+      };
+      const response = await fetch("/api/collect", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
         },
-        signature: state.signature,
+        body: JSON.stringify(
+          {
+            spendPermission,
+            signature,
+            dummyData: Math.ceil(Math.random() * 100),
+          },
+          replacer
+        ),
       });
-
-      const data = await response.json();
-
-      // Add the new transaction to the list
-      if (data.transactionHash) {
-        setState((prev) => ({
-          ...prev,
-          transactions: [
-            {
-              hash: data.transactionHash,
-              amount: "0.001",
-              timestamp: new Date().toISOString(),
-            },
-            ...prev.transactions,
-          ],
-          usedToday: (parseFloat(prev.usedToday) + 0.001).toString(),
-        }));
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
       }
-    } catch (err: any) {
-      setError(err.message || "Failed to collect subscription");
-      console.error(err);
-    } finally {
-      setIsLoading(false);
+      data = await response.json();
+      
+      // Add transaction to the list
+      if (data?.transactionHash) {
+        setTransactions([
+          { hash: data.transactionHash, timestamp: Date.now() },
+          ...transactions,
+        ]);
+      }
+    } catch (e) {
+      console.error(e);
     }
-  };
+    setIsDisabled(false);
+    return data;
+  }
 
-  const handleUnsubscribe = async () => {
-    setIsLoading(true);
-    setError(null);
+  // Helper function to format relative time
+  const formatTimeAgo = (timestamp: number) => {
+    const seconds = Math.floor((Date.now() - timestamp) / 1000);
     
-    try {
-      await apiRequest('DELETE', '/api/subscription', {
-        account: account.address,
-      });
-
-      setState((prev) => ({
-        ...prev,
-        isSubscribed: false,
-        signature: undefined,
-        spendPermission: undefined,
-      }));
-    } catch (err: any) {
-      setError(err.message || "Failed to unsubscribe");
-      console.error(err);
-    } finally {
-      setIsLoading(false);
-    }
+    if (seconds < 60) return `${seconds} seconds ago`;
+    if (seconds < 3600) return `${Math.floor(seconds / 60)} minutes ago`;
+    if (seconds < 86400) return `${Math.floor(seconds / 3600)} hours ago`;
+    return `${Math.floor(seconds / 86400)} days ago`;
   };
-
-  // Calculate percentage of daily limit used
-  const dailyLimitUsed = parseFloat(state.usedToday) / 0.01 * 100;
 
   return (
-    <Card>
+    <Card className="bg-white shadow-sm border border-[#E5E5E5]">
       <CardContent className="p-6">
-        <h2 className="text-xl font-semibold mb-2">Subscription with Spend Limits</h2>
-        <p className="text-textSecondary mb-6">
-          Authorize our service to use your funds without requiring additional signatures.
-        </p>
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-xl font-semibold">Spend Limits</h2>
+          <span className="flex items-center gap-1 px-2 py-1 rounded-full bg-[#EBF0FF] text-primary text-xs font-medium">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor">
+              <path fillRule="evenodd" d="M18 8a6 6 0 01-7.743 5.743L10 14l-1 1-1 1H6v-1l1-1 1-1 .257-.257A6 6 0 1118 8zm-6-4a1 1 0 100 2h4a1 1 0 100-2h-4z" clipRule="evenodd" />
+            </svg>
+            Active
+          </span>
+        </div>
         
-        {!state.isSubscribed ? (
-          <div>
-            <div className="mb-6 p-4 bg-blue-50 rounded-lg border border-blue-100">
-              <div className="flex items-start">
-                <Info className="h-6 w-6 text-primary mr-3 mt-0.5" />
-                <div>
-                  <h3 className="font-medium text-blue-900">About Spend Limits</h3>
-                  <div className="mt-1 text-sm text-blue-800">
-                    <p>By subscribing, you'll authorize our service to:</p>
-                    <ul className="list-disc ml-5 mt-1">
-                      <li>Spend up to 10 ETH from your wallet</li>
-                      <li>Limited to 0.01 ETH per day</li>
-                      <li>No additional signatures required for future transactions</li>
-                    </ul>
-                  </div>
-                </div>
-              </div>
+        <div className="space-y-4">
+          <div className="p-3 bg-[#F6F6F6] rounded-lg">
+            <div className="flex justify-between items-center mb-2">
+              <p className="text-sm font-medium">ETH</p>
+              <div className="text-xs px-2 py-0.5 bg-[#E5E5E5] rounded-full">Native</div>
             </div>
-            
-            {error && (
-              <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-800 rounded-lg">
-                <div className="flex items-start">
-                  <AlertCircle className="h-5 w-5 mr-2 mt-0.5" />
-                  <div>{error}</div>
-                </div>
-              </div>
-            )}
-            
-            <Button 
-              onClick={handleSubscribe} 
-              disabled={isLoading || !account.address}
-              className="w-full sm:w-auto bg-primary hover:bg-primary/90 text-white font-medium"
+            <div className="flex justify-between items-center">
+              <p className="text-lg font-semibold">0.01 ETH</p>
+              <p className="text-sm text-[#676767]">per 24h</p>
+            </div>
+          </div>
+          
+          {!signature ? (
+            <Button
+              className="w-full py-3 px-4 bg-primary text-white font-medium rounded-lg hover:bg-[#0039B3] transition-colors"
+              onClick={handleSubmit}
+              disabled={isDisabled || account.status !== "connected"}
             >
-              <Lock className="h-5 w-5 mr-2" />
               Subscribe
             </Button>
-          </div>
-        ) : (
-          <div>
-            <div className="mb-6 bg-green-50 p-4 rounded-lg border border-green-100">
-              <div className="flex items-start">
-                <Check className="h-6 w-6 text-green-600 mr-3" />
-                <div>
-                  <h3 className="font-medium text-green-800">Subscription Active</h3>
-                  <p className="mt-1 text-sm text-green-700">
-                    You have successfully authorized our service to use your funds.
-                  </p>
-                </div>
-              </div>
-            </div>
-            
-            <div className="mb-6">
-              <div className="flex justify-between mb-2">
-                <div className="text-sm text-textSecondary">Daily spending limit</div>
-                <div className="font-medium">0.01 ETH</div>
-              </div>
-              <Progress value={dailyLimitUsed} className="h-2" />
-              <div className="flex justify-between mt-1">
-                <div className="text-xs text-textSecondary">0 ETH</div>
-                <div className="text-xs text-textSecondary">
-                  {state.usedToday} ETH used today
-                </div>
-              </div>
-            </div>
-            
-            {error && (
-              <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-800 rounded-lg">
-                <div className="flex items-start">
-                  <AlertCircle className="h-5 w-5 mr-2 mt-0.5" />
-                  <div>{error}</div>
-                </div>
-              </div>
-            )}
-            
-            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center">
-              <Button 
-                onClick={handleCollectSubscription} 
-                disabled={isLoading}
-                className="mb-4 sm:mb-0 bg-primary hover:bg-primary/90 text-white font-medium"
+          ) : (
+            <div className="space-y-4">
+              <Button
+                className="w-full py-3 px-4 bg-[#05B169] text-white font-medium rounded-lg hover:bg-[#04a05e] transition-colors"
+                onClick={() => refetch()}
+                disabled={isDisabled}
               >
-                <ArrowLeftRight className="h-5 w-5 mr-2" />
                 Collect Subscription
               </Button>
               
-              <Button 
-                onClick={handleUnsubscribe} 
-                disabled={isLoading}
-                variant="outline"
-                className="text-textSecondary hover:text-textPrimary"
-              >
-                <Unlock className="h-5 w-5 mr-2" />
-                Unsubscribe
-              </Button>
-            </div>
-            
-            {state.transactions.length > 0 && (
-              <div className="mt-6">
-                <h3 className="font-medium mb-3">Subscription Payments</h3>
-                <div className="divide-y">
-                  {state.transactions.map((tx, index) => (
-                    <div key={index} className="py-3 first:pt-0">
-                      <div className="flex justify-between items-center">
-                        <div>
-                          <div className="font-medium">{tx.amount} ETH collected</div>
-                          <div className="text-sm text-textSecondary">
-                            {formatDate(tx.timestamp)}
-                          </div>
-                        </div>
-                        <a 
-                          href={formatTransactionUrl(chainId, tx.hash)} 
-                          className="text-primary hover:underline text-sm" 
-                          target="_blank" 
-                          rel="noopener noreferrer"
-                        >
-                          View
-                        </a>
+              <div className="space-y-2">
+                <h3 className="text-sm font-semibold">Subscription Payments</h3>
+                {transactions.length === 0 ? (
+                  <p className="text-sm text-[#676767]">No transactions yet</p>
+                ) : (
+                  transactions.map((tx, i) => (
+                    <a 
+                      key={i} 
+                      href={`https://sepolia.basescan.org/tx/${tx.hash}`}
+                      className="block p-3 bg-[#F6F6F6] rounded-lg hover:bg-[#E5E5E5] transition-all duration-200"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <div className="flex items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-[#05B169]" viewBox="0 0 20 20" fill="currentColor">
+                          <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                        </svg>
+                        <span className="text-sm font-medium truncate">
+                          {tx.hash.slice(0, 6)}...{tx.hash.slice(-4)}
+                        </span>
                       </div>
-                    </div>
-                  ))}
-                </div>
+                      <div className="mt-1 flex justify-between items-center">
+                        <span className="text-xs text-[#676767]">{formatTimeAgo(tx.timestamp)}</span>
+                        <span className="text-xs font-medium">0.001 ETH</span>
+                      </div>
+                    </a>
+                  ))
+                )}
               </div>
-            )}
-          </div>
-        )}
+            </div>
+          )}
+        </div>
       </CardContent>
     </Card>
   );
