@@ -1,0 +1,184 @@
+Project Setup
+In this section, we'll set up a NextJS project using Wagmi hooks and configure it to work with Smart Wallet.
+
+What you'll achieve
+By the end of this guide, you will:
+
+Set up a NextJS+Wagmi project and configure it to work with Smart Wallet
+Create a Wagmi config to use Sub Accounts in conjunction with Spend Limits
+Skip ahead
+If you want to skip ahead and just get the final code, you can find it here:
+
+Sub Account Starter Template Demo
+https://github.com/base/demos/tree/master/smart-wallet/sub-accounts-demo
+Creating a New Project
+We'll be using a Wagmi template to bootstrap this project.
+
+First, create a new Wagmi project:
+
+Terminal
+
+npm create wagmi@latest my-app
+Select the following options:
+
+Terminal
+
+✔ Select a framework: › React
+✔ Select a variant: › Next
+Navigate into the project directory:
+
+Terminal
+
+cd my-app
+Let's override the default @coinbase/wallet-sdk version with the latest canary version:
+
+Terminal
+
+npm pkg set overrides.@coinbase/wallet-sdk=canary
+Override before installing
+Sub Accounts are currently only available in the Smart Wallet development environment (Canary). Make sure to override the @coinbase/wallet-sdk version BEFORE installing the packages.
+
+Install packages
+
+Terminal
+
+npm install
+Setting up the Wagmi config
+After running these commands, it is time to set up the Wagmi config.
+
+wagmi.ts
+
+import { http, cookieStorage, createConfig, createStorage } from "wagmi";
+import { baseSepolia, base } from "wagmi/chains";
+import { coinbaseWallet } from "wagmi/connectors";
+import { parseEther, toHex } from "viem";
+ 
+export function getConfig() {
+  return createConfig({
+    chains: [baseSepolia, base],
+    connectors: [
+      coinbaseWallet({
+        appName: "My Sub Account Demo",
+        preference: {
+          keysUrl: "https://keys-dev.coinbase.com/connect",
+          options: "smartWalletOnly",
+        },
+        subAccounts: {
+          enableAutoSubAccounts: true,
+          defaultSpendLimits: {
+            84532: [ // Base Sepolia Chain ID
+              {
+                token: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
+                allowance: toHex(parseEther('0.01')), // 0.01 ETH
+                period: 86400, // 24h
+              },
+            ],
+          },
+        },
+      }),
+    ],
+    storage: createStorage({
+      storage: cookieStorage,
+    }),
+    ssr: true,
+    transports: {
+      [baseSepolia.id]: http(),
+      [base.id]: http(),
+    },
+  });
+}
+ 
+declare module "wagmi" {
+  interface Register {
+    config: ReturnType<typeof getConfig>;
+  }
+}
+Let's break down the key preference parameters:
+
+keysUrl: Points to the development environment for Smart Wallet testing
+
+options: 'smartWalletOnly': Ensures only Smart Wallet mode is used
+
+enableAutoSubAccounts: true: When set to true, automatically creates a Sub Account at connection
+
+defaultSpendLimits: Configures Spend Limits for Sub Account for a network (eg. Base Sepolia 84532), including:
+
+Token address (In this case, 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE represents the native ETH)
+Allowance WEI amount (in Hex)
+Time period for the allowance (in seconds, e.g., 86400 for 24 hours)
+About keysUrl
+Sub Accounts are currently only available in the Smart Wallet development environment. To use this environment, you need to set the keysUrl to https://keys-dev.coinbase.com/connect in your configuration.
+
+Creating the Home Page
+Update your main page (app/page.tsx) to include wallet connection functionality:
+
+app/page.tsx
+
+'use client'
+ 
+import { parseEther } from 'viem'
+import { useAccount, useConnect, useDisconnect, useSendTransaction } from 'wagmi'
+ 
+function App() {
+  const account = useAccount()
+  const { connectors, connect, status, error } = useConnect()
+  const { disconnect } = useDisconnect()
+  return (
+    <>
+      <div>
+        <h2>Account</h2>
+ 
+        <div>
+          Status: {account.status}
+          <br />
+          Sub Account Address: {JSON.stringify(account.addresses)}
+          <br />
+          Chain ID: {account.chainId}
+        </div>
+ 
+        {account.status === 'connected' && (
+          <button type="button" onClick={() => disconnect()}>
+            Disconnect
+          </button>
+        )}
+      </div>
+ 
+      <div>
+        <h2>Connect</h2>
+        {connectors
+          .filter((connector) => connector.name === 'Coinbase Wallet')
+          .map((connector) => (
+            <button
+              key={connector.uid}
+              onClick={() => connect({ connector })}
+              type="button"
+            >
+              Sign in with Smart Wallet
+            </button>
+          ))}
+        <div>{status}</div>
+        <div>{error?.message}</div>
+      </div>
+    </>
+  )
+}
+ 
+export default App
+Testing the Setup
+Start your development server:
+Terminal
+
+npm run dev
+Open your browser and navigate to http://localhost:3000.
+Click the "Sign in with Smart Wallet" button to connect your Smart Wallet.
+You should be prompted to create a Sub Account as shown below.
+Sub Account Creation
+Sub Account Creation Pop-up
+Now that you have the basic setup complete, you're ready to start using Sub Accounts! Continue to the next section to learn how to send transactions using your Sub Account.
+
+Next Steps
+In the next section, we'll cover Using Sub Accounts - how to sign messages and send transactions with your Sub Account.
+
+Additional Resources
+You can take a look at the final code in the Sub Account Starter Template Demo
+You can reach out to us on the #smart-wallet channel on Discord if you have any questions or feedback
