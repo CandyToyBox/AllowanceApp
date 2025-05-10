@@ -12,7 +12,7 @@ export default function WalletActions() {
   
   // Sign Message
   const [message, setMessage] = useState("Hello World");
-  const { signMessage, data: signData, isLoading: isSignLoading, reset: resetSign } = useSignMessage();
+  const { signMessage, data: signData, isPending: isSignLoading, reset: resetSign } = useSignMessage();
   
   // Send Transaction
   const [recipient, setRecipient] = useState("0xd8da6bf26964af9d7eed9e03e53415d37aa96045");
@@ -20,7 +20,7 @@ export default function WalletActions() {
   const { 
     sendTransactionAsync, 
     data: txData, 
-    isLoading: isTxLoading,
+    isPending: isTxLoading,
     reset: resetTx
   } = useSendTransaction();
   
@@ -35,8 +35,15 @@ export default function WalletActions() {
     resetTx();
     
     try {
+      // Check if amount is a valid number
+      const parsedAmount = parseFloat(amount);
+      if (isNaN(parsedAmount) || parsedAmount <= 0) {
+        console.error("Invalid amount");
+        return;
+      }
+      
       await sendTransactionAsync({
-        to: recipient,
+        to: recipient as `0x${string}`,
         value: parseEther(amount),
       });
     } catch (error) {

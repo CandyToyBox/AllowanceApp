@@ -11,6 +11,7 @@ export default function SpendLimits() {
   const [signature, setSignature] = useState<Hex>();
   const [transactions, setTransactions] = useState<Array<{hash: string, timestamp: number}>>([]);
   const [spendPermission, setSpendPermission] = useState<object>();
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const { signTypedDataAsync } = useSignTypedData();
   const account = useAccount();
@@ -18,7 +19,7 @@ export default function SpendLimits() {
   const { connectAsync } = useConnect();
   const connectors = useConnect().connectors;
 
-  const { data, error, isLoading, refetch } = useQuery({
+  const { data, error: queryError, isLoading, refetch } = useQuery({
     queryKey: ["collectSubscription"],
     queryFn: handleCollectSubscription,
     refetchOnWindowFocus: false,
