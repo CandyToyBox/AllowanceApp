@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { useAccount, useConnect, useSignTypedData } from "wagmi";
+import { useAccount, useSignTypedData } from "wagmi";
 import { Address, Hex, parseUnits } from "viem";
 import { useQuery } from "@tanstack/react-query";
 import { spendPermissionManagerAddress } from "@/lib/abi/SpendPermissionManager";
@@ -12,12 +12,11 @@ export default function SpendLimits() {
   const [transactions, setTransactions] = useState<Array<{hash: string, timestamp: number}>>([]);
   const [spendPermission, setSpendPermission] = useState<object>();
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
   const { signTypedDataAsync } = useSignTypedData();
   const account = useAccount();
   const chainId = account.chainId || 84532; // Default to Base Sepolia if not available
-  const { connectAsync } = useConnect();
-  const connectors = useConnect().connectors;
 
   const { data, error: queryError, isLoading, refetch } = useQuery({
     queryKey: ["collectSubscription"],
@@ -28,43 +27,43 @@ export default function SpendLimits() {
 
   async function handleSubmit() {
     setIsDisabled(true);
+    setErrorMessage(null);
+    
+    // Check if wallet is connected
+    if (account.status !== "connected") {
+      setErrorMessage("Please connect your wallet first");
+      setIsDisabled(false);
+      return;
+    }
     
     // Get the address from the account
     let accountAddress: Address | undefined;
     
-    if (account.status === "connected") {
-      // For Wagmi v2, try to extract the address from account
-      try {
-        // Try to get address directly from account object
-        const addresses = account.addresses as any;
-        if (Array.isArray(addresses) && addresses.length > 0) {
-          accountAddress = addresses[0] as Address;
-        } else if (addresses?.primaryAddress) {
-          accountAddress = addresses.primaryAddress as Address;
+    // Extract address based on account structure
+    try {
+      // Try to get address from Wagmi v2 account structure
+      if (account.addresses) {
+        if (Array.isArray(account.addresses) && account.addresses.length > 0) {
+          accountAddress = account.addresses[0] as Address;
         }
-      } catch (e) {
-        console.error("Error extracting address:", e);
+      } 
+      
+      // Fallback to any other possible address property
+      if (!accountAddress) {
+        const accountAny = account as any;
+        if (accountAny.address) {
+          accountAddress = accountAny.address as Address;
+        }
       }
+    } catch (e) {
+      console.error("Error extracting address:", e);
     }
     
-    // If no address found, try to connect
+    // If we still don't have an address, show error
     if (!accountAddress) {
-      if (account.status !== "connected") {
-        try {
-          const requestAccounts = await connectAsync({
-            connector: connectors[0],
-          });
-          accountAddress = requestAccounts.accounts[0] as Address;
-        } catch (e) {
-          console.error(e);
-          setIsDisabled(false);
-          return;
-        }
-      } else {
-        console.error("Account is connected but no address found");
-        setIsDisabled(false);
-        return;
-      }
+      setErrorMessage("Could not retrieve wallet address");
+      setIsDisabled(false);
+      return;
     }
 
     // Default spender address for testing - Base Sepolia faucet address
@@ -116,6 +115,9 @@ export default function SpendLimits() {
 
   async function handleCollectSubscription() {
     setIsDisabled(true);
+    setErrorMessage(null);
+    setSuccessMessage(null);
+    
     let data;
     try {
       const replacer = (key: string, value: any) => {
@@ -138,21 +140,32 @@ export default function SpendLimits() {
           replacer
         ),
       });
+      
       if (!response.ok) {
-        throw new Error("Network response was not ok");
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Network response was not ok");
       }
+      
       data = await response.json();
       
       // Add transaction to the list
       if (data?.transactionHash) {
         setTransactions([
-          { hash: data.transactionHash, timestamp: Date.now() },
+          { 
+            hash: data.transactionHash, 
+            timestamp: data.timestamp || Date.now()
+          },
           ...transactions,
         ]);
+        
+        // Show success message
+        setSuccessMessage(`Successfully collected subscription payment of 0.001 ETH`);
       }
-    } catch (e) {
+    } catch (e: any) {
       console.error(e);
+      setErrorMessage(e.message || "Failed to collect subscription. Please try again.");
     }
+    
     setIsDisabled(false);
     return data;
   }
@@ -193,13 +206,20 @@ export default function SpendLimits() {
           </div>
           
           {!signature ? (
-            <Button
-              className="w-full py-3 px-4 bg-primary text-white font-medium rounded-lg hover:bg-[#0039B3] transition-colors"
-              onClick={handleSubmit}
-              disabled={isDisabled || account.status !== "connected"}
-            >
-              Subscribe
-            </Button>
+            <>
+              <Button
+                className="w-full py-3 px-4 bg-primary text-white font-medium rounded-lg hover:bg-[#0039B3] transition-colors"
+                onClick={handleSubmit}
+                disabled={isDisabled || account.status !== "connected"}
+              >
+                Subscribe
+              </Button>
+              {errorMessage && (
+                <div className="mt-2 p-2 bg-red-50 text-red-600 text-sm rounded-md">
+                  {errorMessage}
+                </div>
+              )}
+            </>
           ) : (
             <div className="space-y-4">
               <Button
@@ -207,8 +227,22 @@ export default function SpendLimits() {
                 onClick={() => refetch()}
                 disabled={isDisabled}
               >
-                Collect Subscription
+                {isDisabled ? "Processing..." : "Collect Subscription"}
               </Button>
+              
+              {/* Success message */}
+              {successMessage && (
+                <div className="mt-2 p-2 bg-green-50 text-green-600 text-sm rounded-md">
+                  {successMessage}
+                </div>
+              )}
+              
+              {/* Error message */}
+              {errorMessage && (
+                <div className="mt-2 p-2 bg-red-50 text-red-600 text-sm rounded-md">
+                  {errorMessage}
+                </div>
+              )}
               
               <div className="space-y-2">
                 <h3 className="text-sm font-semibold">Subscription Payments</h3>

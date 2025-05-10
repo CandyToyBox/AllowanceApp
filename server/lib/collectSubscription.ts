@@ -14,6 +14,13 @@ export interface SpendPermission {
   extraData: Hex;
 }
 
+/**
+ * Collects a subscription payment using the SpendPermissionManager contract
+ * 
+ * For this demo, we're simulating the contract interaction without actually 
+ * writing to the blockchain, as this would require a funded spender account
+ * and proper testnet setup
+ */
 export async function collectSubscription(
   publicClient: PublicClient,
   walletClient: WalletClient,
@@ -29,27 +36,26 @@ export async function collectSubscription(
     // We'll use a small amount (0.001 ETH) for our subscription demo
     const subscriptionAmount = parseEther("0.001");
 
-    // Simulate contract interaction without actually writing to the blockchain
-    // For a real application, we would perform the actual contract write
-    console.log("Simulating contract write for spending permission");
-    
-    // Instead of actual contract write, we'll generate a mock transaction hash for demonstration
-    const hash = `0x${Math.random().toString(16).slice(2)}${Math.random().toString(16).slice(2)}`;
-    
+    // In a real application, we would:
+    // 1. Call permitSpendWithAmount on the SpendPermissionManager contract
+    // 2. Use the allowance to transfer tokens from the user's account
 
-    console.log(`Subscription collected: ${hash}`);
+    // For demo purposes, we generate a simulated transaction hash
+    const timestamp = Math.floor(Date.now() / 1000).toString(16);
+    const randomHex = Math.random().toString(16).slice(2, 10);
+    const hash = `0x${timestamp}${randomHex}${"0".repeat(24)}`;
 
-    // For demonstration purposes, we're just showing the approval part
-    // In a real application, you would use the allowance to send tokens from the user's account
-    console.log(`Subscription approved for account: ${permission.account}`);
-    console.log(`Allowance: ${subscriptionAmount.toString()}`);
-    
-    // Note: In a production app, you would actually send tokens from the user account
-    // But for this demo, we just log the approval
+    console.log(`Simulated subscription collection with hash: ${hash}`);
+    console.log(`Account: ${permission.account}`);
+    console.log(`Spender: ${permission.spender}`);
+    console.log(`Token: ${permission.token}`);
+    console.log(`Amount collected: ${subscriptionAmount.toString()} (${parseFloat(subscriptionAmount.toString()) / 1e18} ETH)`);
 
     return {
       transactionHash: hash,
       message: "Subscription successfully collected",
+      amount: "0.001 ETH",
+      timestamp: Date.now()
     };
   } catch (error: any) {
     console.error("Failed to collect subscription:", error);

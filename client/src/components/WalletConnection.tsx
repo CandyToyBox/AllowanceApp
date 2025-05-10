@@ -15,16 +15,35 @@ export default function WalletConnection() {
   let displayAddress = "";
   let walletAddress = "";
   
-  if (account.addresses) {
-    const addresses = account.addresses as any;
-    if (Array.isArray(addresses) && addresses.length > 0) {
-      walletAddress = addresses[0];
-    } else if (addresses?.primaryAddress) {
-      walletAddress = addresses.primaryAddress;
-    }
-    
-    if (walletAddress) {
-      displayAddress = `${walletAddress.slice(0, 6)}...${walletAddress.slice(-4)}`;
+  // Get primary address from account
+  if (account.status === "connected") {
+    try {
+      // Try to get address from Wagmi v2 account structure
+      if (account.addresses) {
+        if (Array.isArray(account.addresses) && account.addresses.length > 0) {
+          walletAddress = account.addresses[0];
+        } else {
+          const addressesAny = account.addresses as any;
+          if (addressesAny?.primaryAddress) {
+            walletAddress = addressesAny.primaryAddress;
+          }
+        }
+      }
+      
+      // Fallback to any address property
+      if (!walletAddress) {
+        const accountAny = account as any;
+        if (accountAny.address) {
+          walletAddress = accountAny.address;
+        }
+      }
+
+      // Format address for display
+      if (walletAddress) {
+        displayAddress = `${walletAddress.slice(0, 6)}...${walletAddress.slice(-4)}`;
+      }
+    } catch (e) {
+      console.error("Error extracting address:", e);
     }
   }
 
