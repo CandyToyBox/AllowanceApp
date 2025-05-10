@@ -1,0 +1,29 @@
+Attempting to get accounts from connector
+Found address from connector: 0x123456789012345678901234567890123456789a
+Account status: connected
+Attempting to get accounts from connector
+Found address from connector: 0x123456789012345678901234567890123456789a
+Account status: connected
+Attempting to get accounts from connector
+Found address from connector: 0x123456789012345678901234567890123456789a
+Account status: connected
+Attempting to get accounts from connector
+Found address from connector: 0x123456789012345678901234567890123456789a
+Error signing message: 
+InvalidAddressError {details: undefined, docsPath: undefined, metaMessages: Array(2), shortMessage: "Address "0xB1d702a952d3B3c5892A39C0A375C10627E67446" is invalid.", version: "2.29.1", …}
+details: undefined
+docsPath: undefined
+metaMessages: Array(2)
+name: "InvalidAddressError"
+shortMessage: "Address "0xB1d702a952d3B3c5892A39C0A375C10627E67446" is invalid."
+version: "2.29.1"
+message: "Address "0xB1d702a952d3B3c5892A39C0A375C10627E67446" is invalid.↵↵- Address must be a hex value of 20 bytes (40 hex characters).↵- Address must match its checksum counterpart.↵↵Version: viem@2.29.1"
+stack: "InvalidAddressError: Address "0xB1d702a952d3B3c5892A39C0A375C10627E67446" is invalid.↵↵- Address must be a hex value of 20 bytes (40 hex characters).↵- Address must match its checksum counterpart.↵↵Version: viem@2.29.1↵ at validateData (https://03b07729-b63c-4ef9-a2c6-20ff88a9e1fa-00-ku8saln9ym88.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-GKWXTGBW.js?v=150c8f89:3746:15)↵ at validateTypedData (https://03b07729-b63c-4ef9-a2c6-20ff88a9e1fa-00-ku8saln9ym88.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-GKWXTGBW.js?v=150c8f89:3766:5)↵ at signTypedData (https://03b07729-b63c-4ef9-a2c6-20ff88a9e1fa-00-ku8saln9ym88.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-GKWXTGBW.js?v=150c8f89:8817:3)↵ at https://03b07729-b63c-4ef9-a2c6-20ff88a9e1fa-00-ku8saln9ym88.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-VMWIJGKD.js?v=150c8f89:2082:22↵ at signTypedData2 (https://03b07729-b63c-4ef9-a2c6-20ff88a9e1fa-00-ku8saln9ym88.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-VMWIJGKD.js?v=150c8f89:2995:10)"
+get stack: ƒ ()
+set stack: ƒ ()
+[[Prototype]]: Object
+
+at t.value (https://03b07729-b63c-4ef9-a2c6-20ff88a9e1fa-00-ku8saln9ym88.picard.replit.dev/__replco/static/devtools/eruda/3.2.3/eruda.js:2:17465)
+at new t (https://03b07729-b63c-4ef9-a2c6-20ff88a9e1fa-00-ku8saln9ym88.picard.replit.dev/__replco/static/devtools/eruda/3.2.3/eruda.js:2:12630)
+at t.value (https://03b07729-b63c-4ef9-a2c6-20ff88a9e1fa-00-ku8saln9ym88.picard.replit.dev/__replco/static/devtools/eruda/3.2.3/eruda.js:2:32766)
+at https://03b07729-b63c-4ef9-a2c6-20ff88a9e1fa-00-ku8saln9ym88.picard.replit.dev/__replco/static/devtools/eruda/3.2.3/eruda.js:2:34400

@@ -26,7 +26,14 @@ export default function SpendLimits() {
     setErrorMessage(null);
     setSuccessMessage(null);
     
-    let data;
+    interface CollectResponseData {
+      transactionHash: string;
+      message: string;
+      amount: string;
+      timestamp: number;
+    }
+    
+    let data: CollectResponseData | undefined;
     try {
       const replacer = (key: string, value: any) => {
         if (typeof value === "bigint") {
@@ -55,9 +62,9 @@ export default function SpendLimits() {
         throw new Error(errorData.message || "Network response was not ok");
       }
       
-      data = await response.json();
+      data = await response.json() as CollectResponseData;
       
-      if (data?.transactionHash) {
+      if (data && data.transactionHash) {
         setTransactions(prev => [
           { 
             hash: data.transactionHash, 
@@ -85,10 +92,10 @@ export default function SpendLimits() {
     enabled: false, // Don't fetch automatically, only when button is clicked
   });
 
-  // Demo wallet address function
+  // Demo wallet address function - use properly formatted address
   const getDemoWalletAddress = (): Address => {
-    // For demo purposes, use a placeholder address
-    return "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266" as Address;
+    // For demo purposes, use a valid lowercase Ethereum address
+    return "0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266" as Address;
   };
 
   // Function to submit a subscription
@@ -107,13 +114,13 @@ export default function SpendLimits() {
       const walletAddress = getDemoWalletAddress();
       
       // Default spender address for testing
-      const spenderAddress = "0x422289A2A34F11F8Be5d74BdBA748A484390dBde" as Address;
+      const spenderAddress = "0x422289a2a34f11f8be5d74bdba748a484390dbde" as Address;
       
       // Create the spend permission data
       const permissionData = {
         account: walletAddress, // User wallet address
         spender: spenderAddress, // Spender address
-        token: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE" as Address, // ETH (EIP-7528 standard)
+        token: "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee" as Address, // ETH (EIP-7528 standard)
         allowance: parseUnits("0.01", 18), // 0.01 ETH
         period: 86400, // seconds in a day
         start: 0, // unix timestamp
