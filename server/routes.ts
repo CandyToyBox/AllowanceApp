@@ -366,7 +366,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // For spending, check if child has sufficient balance
       if (parsedData.data.amount < 0) {
-        if (child.allowanceBalance + parsedData.data.amount < 0) {
+        const currentBalance = child.allowanceBalance || 0;
+        if (currentBalance + parsedData.data.amount < 0) {
           return res.status(400).json({ 
             message: "Insufficient allowance balance" 
           });
