@@ -126,6 +126,11 @@ export default function SpendLimits() {
         }
         return value;
       };
+      console.log("Sending collect request with data:", {
+        spendPermission,
+        signature
+      });
+      
       const response = await fetch("/api/collect", {
         method: "POST",
         headers: {
