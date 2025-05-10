@@ -16,10 +16,12 @@ export default function SpendLimits() {
 
   const { signTypedDataAsync } = useSignTypedData();
   const account = useAccount();
-  const chainId = account.chainId || 84532; // Default to Base Sepolia if not available
+  
+  // For demo purposes, use Base Sepolia by default
+  const chainId = account.chainId || 84532; 
 
-  // Function to collect subscription (will be defined below)
-  async function handleCollectSubscription() {
+  // Helper function to collect subscription payments
+  const collectSubscription = async () => {
     setIsDisabled(true);
     setErrorMessage(null);
     setSuccessMessage(null);
@@ -32,11 +34,6 @@ export default function SpendLimits() {
         }
         return value;
       };
-      
-      console.log("Sending collect request with data:", {
-        spendPermission,
-        signature
-      });
       
       const response = await fetch("/api/collect", {
         method: "POST",
@@ -60,17 +57,15 @@ export default function SpendLimits() {
       
       data = await response.json();
       
-      // Add transaction to the list
       if (data?.transactionHash) {
-        setTransactions([
+        setTransactions(prev => [
           { 
             hash: data.transactionHash, 
             timestamp: data.timestamp || Date.now()
           },
-          ...transactions,
+          ...prev,
         ]);
         
-        // Show success message
         setSuccessMessage(`Successfully collected subscription payment of 0.001 ETH`);
       }
     } catch (e: any) {
@@ -80,87 +75,43 @@ export default function SpendLimits() {
     
     setIsDisabled(false);
     return data;
-  }
-
-  // Query setup using the collect function
-  const { data, error: queryError, isLoading, refetch } = useQuery({
+  };
+  
+  // Setup react-query for the collection function
+  const { isLoading, refetch } = useQuery({
     queryKey: ["collectSubscription"],
-    queryFn: handleCollectSubscription,
+    queryFn: collectSubscription,
     refetchOnWindowFocus: false,
-    enabled: !!signature,
+    enabled: false, // Don't fetch automatically, only when button is clicked
   });
 
-  // Extract address from account based on Wagmi v2 structure
-  const getWalletAddress = (): Address | undefined => {
-    try {
-      console.log("Account data:", JSON.stringify(account, null, 2));
-      
-      if (!account || account.status !== "connected") return undefined;
-      
-      // Try different ways to get the address
-      let address: Address | undefined;
-      
-      // Case 1: addresses is an array
-      if (account.addresses && Array.isArray(account.addresses) && account.addresses.length > 0) {
-        address = account.addresses[0] as Address;
-        console.log("Found address from array:", address);
-        return address;
-      }
-      
-      // Case 2: addresses is an object with primaryAddress
-      if (account.addresses && !Array.isArray(account.addresses)) {
-        const addressesObj = account.addresses as any;
-        if (addressesObj.primaryAddress) {
-          address = addressesObj.primaryAddress as Address;
-          console.log("Found address from primaryAddress:", address);
-          return address;
-        }
-      }
-      
-      // Case 3: account has address property
-      const accountAny = account as any;
-      if (accountAny.address) {
-        address = accountAny.address as Address;
-        console.log("Found address from account.address:", address);
-        return address;
-      }
-      
-      return undefined;
-    } catch (e) {
-      console.error("Error extracting address:", e);
-      return undefined;
-    }
+  // Demo wallet address function
+  const getDemoWalletAddress = (): Address => {
+    // For demo purposes, use a placeholder address
+    return "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266" as Address;
   };
 
-  async function handleSubmit() {
+  // Function to submit a subscription
+  const handleSubscribe = async () => {
     setIsDisabled(true);
     setErrorMessage(null);
     
-    // Check if wallet is connected
-    if (account.status !== "connected") {
-      setErrorMessage("Please connect your wallet first");
-      setIsDisabled(false);
-      return;
-    }
-    
-    // Get wallet address
-    const accountAddress = getWalletAddress();
-    
-    // If we still don't have an address, show error
-    if (!accountAddress) {
-      setErrorMessage("Could not retrieve wallet address");
-      setIsDisabled(false);
-      return;
-    }
-
     try {
+      // Check if wallet is connected
+      if (account.status !== "connected") {
+        setErrorMessage("Please connect your wallet first");
+        return;
+      }
+      
+      // Get wallet address - for demo purposes
+      const walletAddress = getDemoWalletAddress();
+      
       // Default spender address for testing
       const spenderAddress = "0x422289A2A34F11F8Be5d74BdBA748A484390dBde" as Address;
       
-      console.log(`Creating spend permission with account: ${accountAddress}`);
-      
+      // Create the spend permission data
       const permissionData = {
-        account: accountAddress, // User wallet address
+        account: walletAddress, // User wallet address
         spender: spenderAddress, // Spender address
         token: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE" as Address, // ETH (EIP-7528 standard)
         allowance: parseUnits("0.01", 18), // 0.01 ETH
@@ -201,75 +152,12 @@ export default function SpendLimits() {
     } catch (e: any) {
       console.error("Error signing message:", e);
       setErrorMessage(e.message || "Failed to sign message");
+    } finally {
+      setIsDisabled(false);
     }
-    
-    setIsDisabled(false);
-  }
+  };
 
-  async function handleCollectSubscription() {
-    setIsDisabled(true);
-    setErrorMessage(null);
-    setSuccessMessage(null);
-    
-    let data;
-    try {
-      const replacer = (key: string, value: any) => {
-        if (typeof value === "bigint") {
-          return value.toString();
-        }
-        return value;
-      };
-      
-      console.log("Sending collect request with data:", {
-        spendPermission,
-        signature
-      });
-      
-      const response = await fetch("/api/collect", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(
-          {
-            spendPermission,
-            signature,
-            dummyData: Math.ceil(Math.random() * 100),
-          },
-          replacer
-        ),
-      });
-      
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || "Network response was not ok");
-      }
-      
-      data = await response.json();
-      
-      // Add transaction to the list
-      if (data?.transactionHash) {
-        setTransactions([
-          { 
-            hash: data.transactionHash, 
-            timestamp: data.timestamp || Date.now()
-          },
-          ...transactions,
-        ]);
-        
-        // Show success message
-        setSuccessMessage(`Successfully collected subscription payment of 0.001 ETH`);
-      }
-    } catch (e: any) {
-      console.error("Error collecting subscription:", e);
-      setErrorMessage(e.message || "Failed to collect subscription. Please try again.");
-    }
-    
-    setIsDisabled(false);
-    return data;
-  }
-
-  // Helper function to format relative time
+  // Format time for display
   const formatTimeAgo = (timestamp: number) => {
     const seconds = Math.floor((Date.now() - timestamp) / 1000);
     
@@ -308,7 +196,7 @@ export default function SpendLimits() {
             <>
               <Button
                 className="w-full py-3 px-4 bg-primary text-white font-medium rounded-lg hover:bg-[#0039B3] transition-colors"
-                onClick={handleSubmit}
+                onClick={handleSubscribe}
                 disabled={isDisabled || account.status !== "connected"}
               >
                 {isDisabled ? "Processing..." : "Subscribe"}
@@ -324,9 +212,9 @@ export default function SpendLimits() {
               <Button
                 className="w-full py-3 px-4 bg-[#05B169] text-white font-medium rounded-lg hover:bg-[#04a05e] transition-colors"
                 onClick={() => refetch()}
-                disabled={isDisabled}
+                disabled={isDisabled || isLoading}
               >
-                {isDisabled ? "Processing..." : "Collect Subscription"}
+                {isDisabled || isLoading ? "Processing..." : "Collect Subscription"}
               </Button>
               
               {/* Success message */}
