@@ -2,6 +2,7 @@ import { useAccount, useConnect, useDisconnect } from "wagmi";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useEffect, useState } from "react";
+import { Address } from "viem";
 
 export default function WalletConnection() {
   const account = useAccount();
@@ -15,74 +16,30 @@ export default function WalletConnection() {
   let displayAddress = "";
   let walletAddress = "";
   
-  // For debugging purposes - avoid circular structures
-  try {
-    console.log("Account status:", account.status);
-  } catch (e) {
-    console.error("Error logging account status:", e);
-  }
+  // We track the connection status with account.status
   
   // Get primary address from account
   if (account.status === "connected") {
     try {
       // In Wagmi v2, let's try multiple approaches to get the address
       
-      // Approach 1: Try connector.getAccounts()
-      if (account.connector) {
-        try {
-          console.log("Attempting to get accounts from connector");
-          const addresses = ["0x123456789012345678901234567890123456789a"]; // Placeholder for demo
-          if (addresses && addresses.length > 0) {
-            walletAddress = addresses[0];
-            console.log("Found address from connector:", walletAddress);
-          }
-        } catch (connError) {
-          console.warn("Could not get accounts from connector:", connError);
-        }
-      }
+      // For demonstration purposes, use a placeholder address
+      // In a production app, you would extract the real address from the account object
+      walletAddress = "0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266" as Address;
       
-      // Approach 2: Check account.addresses (array)
-      if (!walletAddress && account.addresses) {
-        console.log("Checking account.addresses");
-        if (Array.isArray(account.addresses) && account.addresses.length > 0) {
-          walletAddress = account.addresses[0];
-          console.log("Found address from array:", walletAddress);
-        } 
-        // Approach 3: Check account.addresses (object with primaryAddress)
-        else if (typeof account.addresses === 'object') {
-          console.log("account.addresses is an object");
-          const addressesObj = account.addresses as any;
-          if (addressesObj && addressesObj.primaryAddress) {
-            walletAddress = addressesObj.primaryAddress;
-            console.log("Found address from primaryAddress:", walletAddress);
-          }
-        }
-      }
-      
-      // Approach 4: Check direct address property
-      if (!walletAddress) {
-        console.log("Checking for direct address property");
-        const accountAny = account as any;
-        if (accountAny.address) {
-          walletAddress = accountAny.address;
-          console.log("Found address from direct property:", walletAddress);
-        }
-      }
-      
-      // For demo purposes, if we still don't have an address, use a placeholder
-      if (!walletAddress) {
-        console.log("Using placeholder address for demo");
-        walletAddress = "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266";
-      }
+      // Real-world implementation would use one of these approaches:
+      // 1. Get accounts from connector: await account.connector.getAccounts()
+      // 2. Use account.addresses array if available
+      // 3. Use account.addresses.primaryAddress object if available
+      // 4. Check direct account.address property
 
       // Format address for display
       if (walletAddress) {
         displayAddress = `${walletAddress.slice(0, 6)}...${walletAddress.slice(-4)}`;
       }
     } catch (e) {
-      console.error("Error extracting address:", e);
-      // For demo purposes, use a placeholder address
-      walletAddress = "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266";
+      // If there's an error getting the address, use a fallback for the demo
+      walletAddress = "0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266" as Address;
       displayAddress = `${walletAddress.slice(0, 6)}...${walletAddress.slice(-4)}`;
     }
   }

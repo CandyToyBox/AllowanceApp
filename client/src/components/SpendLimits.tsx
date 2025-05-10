@@ -42,6 +42,7 @@ export default function SpendLimits() {
         return value;
       };
       
+      // Send the permission and signature to the server for processing
       const response = await fetch("/api/collect", {
         method: "POST",
         headers: {
@@ -51,7 +52,8 @@ export default function SpendLimits() {
           {
             spendPermission,
             signature,
-            dummyData: Math.ceil(Math.random() * 100),
+            // Add some randomness to ensure the request is unique
+            requestId: Math.ceil(Math.random() * 100000),
           },
           replacer
         ),
@@ -62,13 +64,17 @@ export default function SpendLimits() {
         throw new Error(errorData.message || "Network response was not ok");
       }
       
-      data = await response.json() as CollectResponseData;
+      data = (await response.json()) as CollectResponseData;
       
       if (data && data.transactionHash) {
+        // Update transactions with the new transaction data
+        const timestamp = data.timestamp || Date.now();
+        const transactionHash = data.transactionHash;
+        
         setTransactions(prev => [
           { 
-            hash: data.transactionHash, 
-            timestamp: data.timestamp || Date.now()
+            hash: transactionHash, 
+            timestamp: timestamp
           },
           ...prev,
         ]);
@@ -113,9 +119,8 @@ export default function SpendLimits() {
       // Get wallet address - for demo purposes
       const walletAddress = getDemoWalletAddress();
       
-      // Use a hardcoded spender address for the demo - using lowercase
-      // In production, you would use environment variables properly
-      const spenderAddress = "0x422289a2a34f11f8be5d74bdba748a484390dbde".toLowerCase() as Address;
+      // Use a hardcoded spender address for the demo - using lowercase for viem compatibility
+      const spenderAddress = "0x422289a2a34f11f8be5d74bdba748a484390dbde" as Address;
       
       // Create the spend permission data - following the documentation
       const permissionData = {
@@ -130,7 +135,7 @@ export default function SpendLimits() {
         extraData: "0x" as Hex, // No extra data needed
       };
 
-      // Sign the permission
+      // Sign the permission using EIP-712 typed data
       const typedSignature = await signTypedDataAsync({
         domain: {
           name: "Spend Limit Manager",
@@ -155,6 +160,7 @@ export default function SpendLimits() {
         message: permissionData,
       });
       
+      // Save the permission and signature for later use
       setSpendPermission(permissionData);
       setSignature(typedSignature);
     } catch (e: any) {
