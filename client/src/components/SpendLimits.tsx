@@ -113,20 +113,20 @@ export default function SpendLimits() {
       // Get wallet address - for demo purposes
       const walletAddress = getDemoWalletAddress();
       
-      // Default spender address for testing
-      const spenderAddress = "0x422289a2a34f11f8be5d74bdba748a484390dbde" as Address;
+      // Use the spender address from environment variables as recommended in docs
+      const spenderAddress = (process.env.NEXT_PUBLIC_SPENDER_ADDRESS || "0x422289a2a34f11f8be5d74bdba748a484390dbde").toLowerCase() as Address;
       
-      // Create the spend permission data
+      // Create the spend permission data - following the documentation
       const permissionData = {
         account: walletAddress, // User wallet address
         spender: spenderAddress, // Spender address
         token: "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee" as Address, // ETH (EIP-7528 standard)
-        allowance: parseUnits("0.01", 18), // 0.01 ETH
+        allowance: parseUnits("0.01", 18), // 0.01 ETH per period
         period: 86400, // seconds in a day
-        start: 0, // unix timestamp
-        end: 281474976710655, // max uint48
-        salt: BigInt(0),
-        extraData: "0x" as Hex,
+        start: 0, // unix timestamp (0 for immediate start)
+        end: 281474976710655, // max uint48 (far future expiration)
+        salt: BigInt(0), // Used for uniqueness - zero for demo
+        extraData: "0x" as Hex, // No extra data needed
       };
 
       // Sign the permission

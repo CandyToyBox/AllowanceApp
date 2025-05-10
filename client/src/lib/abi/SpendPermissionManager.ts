@@ -1,5 +1,6 @@
 // Address of the SpendPermissionManager contract on Base Sepolia
-export const spendPermissionManagerAddress = "0xb1d702a952d3b3c5892a39c0a375c10627e67446" as const;
+// This is the official contract address from the documentation
+export const spendPermissionManagerAddress = "0x000000000022D473030F116dDEE9F6B43aC78BA3" as const;
 
 // SpendPermissionManager ABI
 export const spendPermissionManagerABI = [
