@@ -113,8 +113,9 @@ export default function SpendLimits() {
       // Get wallet address - for demo purposes
       const walletAddress = getDemoWalletAddress();
       
-      // Use the spender address from environment variables as recommended in docs
-      const spenderAddress = (process.env.NEXT_PUBLIC_SPENDER_ADDRESS || "0x422289a2a34f11f8be5d74bdba748a484390dbde").toLowerCase() as Address;
+      // Use a hardcoded spender address for the demo - using lowercase
+      // In production, you would use environment variables properly
+      const spenderAddress = "0x422289a2a34f11f8be5d74bdba748a484390dbde".toLowerCase() as Address;
       
       // Create the spend permission data - following the documentation
       const permissionData = {

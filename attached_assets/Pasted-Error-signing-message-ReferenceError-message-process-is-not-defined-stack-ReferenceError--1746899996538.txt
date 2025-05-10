@@ -1,0 +1,103 @@
+Error signing message: 
+ReferenceError {}
+message: "process is not defined"
+stack: "ReferenceError: process is not defined↵ at handleSubscribe (https://03b07729-b63c-4ef9-a2c6-20ff88a9e1fa-00-ku8saln9ym88.picard.replit.dev/src/components/SpendLimits.tsx:105:30)↵ at HTMLUnknownElement.callCallback2 (https://03b07729-b63c-4ef9-a2c6-20ff88a9e1fa-00-ku8saln9ym88.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-4KKYKPGK.js?v=150c8f89:3674:22)↵ at Object.invokeGuardedCallbackDev (https://03b07729-b63c-4ef9-a2c6-20ff88a9e1fa-00-ku8saln9ym88.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-4KKYKPGK.js?v=150c8f89:3699:24)↵ at invokeGuardedCallback (https://03b07729-b63c-4ef9-a2c6-20ff88a9e1fa-00-ku8saln9ym88.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-4KKYKPGK.js?v=150c8f89:3733:39)↵ at invokeGuardedCallbackAndCatchFirstError (https://03b07729-b63c-4ef9-a2c6-20ff88a9e1fa-00-ku8saln9ym88.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-4KKYKPGK.js?v=150c8f89:3736:33)↵ at executeDispatch (https://03b07729-b63c-4ef9-a2c6-20ff88a9e1fa-00-ku8saln9ym88.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-4KKYKPGK.js?v=150c8f89:7014:11)↵ at processDispatchQueueItemsInOrder (https://03b07729-b63c-4ef9-a2c6-20ff88a9e1fa-00-ku8saln9ym88.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-4KKYKPGK.js?v=150c8f89:7034:15)↵ at processDispatchQueue (https://03b07729-b63c-4ef9-a2c6-20ff88a9e1fa-00-ku8saln9ym88.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-4KKYKPGK.js?v=150c8f89:7043:13)↵ at dispatchEventsForPlugins (https://03b07729-b63c-4ef9-a2c6-20ff88a9e1fa-00-ku8saln9ym88.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-4KKYKPGK.js?v=150c8f89:7051:11)↵ at https://03b07729-b63c-4ef9-a2c6-20ff88a9e1fa-00-ku8saln9ym88.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-4KKYKPGK.js?v=150c8f89:7174:20"
+get stack: ƒ ()
+length: 0
+name: ""
+[[Prototype]]: ƒ ()
+apply: ƒ apply()
+arguments: "'caller', 'callee', and 'arguments' properties may not be accessed on strict mode functions or the arguments objects for calls to them"
+get arguments: ƒ ()
+set arguments: ƒ ()
+bind: ƒ bind()
+call: ƒ call()
+caller: "'caller', 'callee', and 'arguments' properties may not be accessed on strict mode functions or the arguments objects for calls to them"
+get caller: ƒ ()
+set caller: ƒ ()
+constructor: ƒ Function()
+length: 0
+name: ""
+toString: ƒ toString()
+length: 0
+name: "toString"
+[[Prototype]]: ƒ ()
+apply: ƒ apply()
+arguments: "'caller', 'callee', and 'arguments' properties may not be accessed on strict mode functions or the arguments objects for calls to them"
+get arguments: ƒ ()
+set arguments: ƒ ()
+bind: ƒ bind()
+call: ƒ call()
+caller: "'caller', 'callee', and 'arguments' properties may not be accessed on strict mode functions or the arguments objects for calls to them"
+get caller: ƒ ()
+set caller: ƒ ()
+constructor: ƒ Function()
+length: 0
+name: ""
+toString: ƒ toString()
+Symbol(Symbol.hasInstance): undefined
+[[Prototype]]: Object
+constructor: ƒ Function()
+hasOwnProperty: ƒ hasOwnProperty()
+isPrototypeOf: ƒ isPrototypeOf()
+propertyIsEnumerable: ƒ propertyIsEnumerable()
+toLocaleString: ƒ toLocaleString()
+toString: ƒ toString()
+valueOf: ƒ valueOf()
+__defineGetter__: ƒ __defineGetter__()
+__defineSetter__: ƒ __defineSetter__()
+__lookupGetter__: ƒ __lookupGetter__()
+__lookupSetter__: ƒ __lookupSetter__()
+__proto__: ƒ ()
+get __proto__: ƒ get __proto__()
+set __proto__: ƒ set __proto__()
+Symbol(Symbol.hasInstance): undefined
+[[Prototype]]: Object
+constructor: ƒ Function()
+hasOwnProperty: ƒ hasOwnProperty()
+isPrototypeOf: ƒ isPrototypeOf()
+propertyIsEnumerable: ƒ propertyIsEnumerable()
+toLocaleString: ƒ toLocaleString()
+toString: ƒ toString()
+valueOf: ƒ valueOf()
+__defineGetter__: ƒ __defineGetter__()
+__defineSetter__: ƒ __defineSetter__()
+__lookupGetter__: ƒ __lookupGetter__()
+__lookupSetter__: ƒ __lookupSetter__()
+__proto__: ƒ ()
+get __proto__: ƒ get __proto__()
+set __proto__: ƒ set __proto__()
+set stack: ƒ ()
+length: 1
+name: ""
+[[Prototype]]: ƒ ()
+apply: ƒ apply()
+arguments: "'caller', 'callee', and 'arguments' properties may not be accessed on strict mode functions or the arguments objects for calls to them"
+get arguments: ƒ ()
+set arguments: ƒ ()
+bind: ƒ bind()
+call: ƒ call()
+caller: "'caller', 'callee', and 'arguments' properties may not be accessed on strict mode functions or the arguments objects for calls to them"
+get caller: ƒ ()
+set caller: ƒ ()
+constructor: ƒ Function()
+length: 0
+name: ""
+toString: ƒ toString()
+Symbol(Symbol.hasInstance): undefined
+[[Prototype]]: Object
+[[Prototype]]: Object
+constructor: ƒ ReferenceError()
+message: "process is not defined"
+name: "ReferenceError"
+[[Prototype]]: Object
+
+Error signing message: 
+ReferenceError {}
+
+Error signing message: 
+ReferenceError {}
+
+Error signing message: 
+ReferenceError {}
+
