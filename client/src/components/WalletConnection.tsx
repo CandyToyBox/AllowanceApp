@@ -10,13 +10,27 @@ export default function WalletConnection() {
   const [copied, setCopied] = useState(false);
 
   const isConnected = account.status === "connected";
-  const displayAddress = account.addresses?.primaryAddress 
-    ? `${account.addresses.primaryAddress.slice(0, 6)}...${account.addresses.primaryAddress.slice(-4)}`
-    : "";
+  
+  // Extract display address from the account
+  let displayAddress = "";
+  let walletAddress = "";
+  
+  if (account.addresses) {
+    const addresses = account.addresses as any;
+    if (Array.isArray(addresses) && addresses.length > 0) {
+      walletAddress = addresses[0];
+    } else if (addresses?.primaryAddress) {
+      walletAddress = addresses.primaryAddress;
+    }
+    
+    if (walletAddress) {
+      displayAddress = `${walletAddress.slice(0, 6)}...${walletAddress.slice(-4)}`;
+    }
+  }
 
   const copyAddress = () => {
-    if (account.addresses?.primaryAddress) {
-      navigator.clipboard.writeText(account.addresses.primaryAddress);
+    if (walletAddress) {
+      navigator.clipboard.writeText(walletAddress);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     }

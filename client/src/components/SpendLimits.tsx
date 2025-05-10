@@ -27,23 +27,51 @@ export default function SpendLimits() {
 
   async function handleSubmit() {
     setIsDisabled(true);
-    let accountAddress = account?.addresses?.primaryAddress;
-    if (!accountAddress) {
+    
+    // Get the address from the account
+    let accountAddress: Address | undefined;
+    
+    if (account.status === "connected") {
+      // For Wagmi v2, try to extract the address from account
       try {
-        const requestAccounts = await connectAsync({
-          connector: connectors[0],
-        });
-        accountAddress = requestAccounts.accounts[0] as Address;
+        // Try to get address directly from account object
+        const addresses = account.addresses as any;
+        if (Array.isArray(addresses) && addresses.length > 0) {
+          accountAddress = addresses[0] as Address;
+        } else if (addresses?.primaryAddress) {
+          accountAddress = addresses.primaryAddress as Address;
+        }
       } catch (e) {
-        console.error(e);
+        console.error("Error extracting address:", e);
+      }
+    }
+    
+    // If no address found, try to connect
+    if (!accountAddress) {
+      if (account.status !== "connected") {
+        try {
+          const requestAccounts = await connectAsync({
+            connector: connectors[0],
+          });
+          accountAddress = requestAccounts.accounts[0] as Address;
+        } catch (e) {
+          console.error(e);
+          setIsDisabled(false);
+          return;
+        }
+      } else {
+        console.error("Account is connected but no address found");
         setIsDisabled(false);
         return;
       }
     }
 
+    // Default spender address for testing - Base Sepolia faucet address
+    const spenderAddress = "0x422289A2A34F11F8Be5d74BdBA748A484390dBde" as Address;
+    
     const spendPermission = {
       account: accountAddress, // User wallet address
-      spender: process.env.NEXT_PUBLIC_SPENDER_ADDRESS as Address || "0x1234567890123456789012345678901234567890", // Spender address
+      spender: spenderAddress, // Spender address
       token: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE" as Address, // ETH (EIP-7528 standard)
       allowance: parseUnits("0.01", 18), // 0.01 ETH
       period: 86400, // seconds in a day

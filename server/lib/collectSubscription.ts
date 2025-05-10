@@ -38,13 +38,13 @@ export async function collectSubscription(
 
     console.log(`Subscription collected: ${hash}`);
 
-    // Send ETH to the spender from the user account
-    const transferHash = await walletClient.sendTransaction({
-      to: walletClient.account.address,
-      value: 0n, // We don't need to send value here, just to use the authorization
-    });
-
-    console.log(`Transfer executed: ${transferHash}`);
+    // For demonstration purposes, we're just showing the approval part
+    // In a real application, you would use the allowance to send tokens from the user's account
+    console.log(`Subscription approved for account: ${permission.account}`);
+    console.log(`Allowance: ${subscriptionAmount.toString()}`);
+    
+    // Note: In a production app, you would actually send tokens from the user account
+    // But for this demo, we just log the approval
 
     return {
       transactionHash: hash,
