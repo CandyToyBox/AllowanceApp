@@ -9,6 +9,7 @@ import { useAccount } from "wagmi";
 export default function Home() {
   // Check the connection status when the component mounts
   const account = useAccount();
+  const isConnected = account.status === "connected";
 
   // Update the page title when the component mounts
   useEffect(() => {
@@ -21,6 +22,19 @@ export default function Home() {
         <Header />
         
         <main className="p-6">
+          {/* Intro banner when not connected */}
+          {!isConnected && (
+            <div className="mb-6 p-4 rounded-lg bg-primary/10 border border-primary/20">
+              <h2 className="text-xl font-semibold text-primary mb-2">
+                Smart Wallet Demo with Sub Accounts and Spend Limits
+              </h2>
+              <p className="text-gray-700">
+                This demo showcases Coinbase Smart Wallet's capabilities with Sub Accounts and Spend Limits.
+                First, connect your wallet using the "Sign in with Smart Wallet" button to get started.
+              </p>
+            </div>
+          )}
+          
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* Wallet Connection Section */}
             <div className="lg:col-span-1">
