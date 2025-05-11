@@ -95,11 +95,7 @@ const ParentDashboard = () => {
   
   // Create child mutation
   const createChildMutation = useMutation({
-    mutationFn: (childData: any) => apiRequest('/api/children', { 
-      method: 'POST',
-      body: JSON.stringify(childData),
-      headers: { 'Content-Type': 'application/json' }
-    }, { on401: "returnNull" }),
+    mutationFn: (childData: any) => apiRequest('POST', '/api/children', childData),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/parents', parent?.id, 'children'] });
       setAddChildOpen(false);
@@ -120,11 +116,7 @@ const ParentDashboard = () => {
   
   // Create task mutation
   const createTaskMutation = useMutation({
-    mutationFn: (taskData: any) => apiRequest('/api/tasks', { 
-      method: 'POST',
-      body: JSON.stringify(taskData),
-      headers: { 'Content-Type': 'application/json' }
-    }, { on401: "returnNull" }),
+    mutationFn: (taskData: any) => apiRequest('POST', '/api/tasks', taskData),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/parents', parent?.id, 'tasks'] });
       setAddTaskOpen(false);
@@ -145,10 +137,7 @@ const ParentDashboard = () => {
   
   // Approve task mutation
   const approveTaskMutation = useMutation({
-    mutationFn: (taskId: number) => apiRequest(`/api/tasks/${taskId}/approve`, { 
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' }
-    }, { on401: "returnNull" }),
+    mutationFn: (taskId: number) => apiRequest('PATCH', `/api/tasks/${taskId}/approve`),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/parents', parent?.id, 'tasks'] });
       setIsTaskDetailOpen(false);
@@ -168,10 +157,7 @@ const ParentDashboard = () => {
   
   // Reject task mutation
   const rejectTaskMutation = useMutation({
-    mutationFn: (taskId: number) => apiRequest(`/api/tasks/${taskId}/reject`, { 
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' }
-    }, { on401: "returnNull" }),
+    mutationFn: (taskId: number) => apiRequest('PATCH', `/api/tasks/${taskId}/reject`),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/parents', parent?.id, 'tasks'] });
       setIsTaskDetailOpen(false);

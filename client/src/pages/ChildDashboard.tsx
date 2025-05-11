@@ -70,11 +70,7 @@ const ChildDashboard = () => {
   // Submit proof mutation
   const submitProofMutation = useMutation({
     mutationFn: ({ taskId, proofImageUrl }: { taskId: number, proofImageUrl: string }) => 
-      apiRequest(`/api/tasks/${taskId}/proof`, { 
-        method: 'PATCH',
-        body: JSON.stringify({ proofImageUrl }),
-        headers: { 'Content-Type': 'application/json' }
-      }, { on401: "returnNull" }),
+      apiRequest('PATCH', `/api/tasks/${taskId}/proof`, { proofImageUrl }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/children', child?.id, 'tasks'] });
       setIsProofDialogOpen(false);
