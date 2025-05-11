@@ -55,7 +55,7 @@ const ParentDashboard = () => {
     queryKey: ['/api/parents/wallet', address],
     queryFn: () => 
       address ? 
-      apiRequest(`/api/parents/wallet/${address}`, { on401: "returnNull" }) : 
+      apiRequest("GET", `/api/parents/wallet/${address}`) : 
       Promise.resolve(null),
     enabled: !!address,
   });
@@ -63,24 +63,20 @@ const ParentDashboard = () => {
   // Fetch children
   const { data: children = [], isLoading: childrenLoading } = useQuery({
     queryKey: ['/api/parents', parent?.id, 'children'],
-    queryFn: () => apiRequest(`/api/parents/${parent?.id}/children`, { on401: "returnNull" }),
+    queryFn: () => apiRequest("GET", `/api/parents/${parent?.id}/children`),
     enabled: !!parent?.id,
   });
   
   // Fetch tasks
   const { data: tasks = [], isLoading: tasksLoading } = useQuery({
     queryKey: ['/api/parents', parent?.id, 'tasks'],
-    queryFn: () => apiRequest(`/api/parents/${parent?.id}/tasks`, { on401: "returnNull" }),
+    queryFn: () => apiRequest("GET", `/api/parents/${parent?.id}/tasks`),
     enabled: !!parent?.id,
   });
   
   // Create parent mutation
   const createParentMutation = useMutation({
-    mutationFn: (parentData: any) => apiRequest('/api/parents', { 
-      method: 'POST',
-      body: JSON.stringify(parentData),
-      headers: { 'Content-Type': 'application/json' }
-    }, { on401: "returnNull" }),
+    mutationFn: (parentData: any) => apiRequest('POST', '/api/parents', parentData),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/parents/wallet', address] });
       toast({
