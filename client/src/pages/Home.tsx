@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { Link } from "wouter";
+import { Link as WouterLink } from "wouter";
 import WalletConnect from "@/components/WalletConnect";
 import { Button } from "@/components/ui/button";
 import { useAccount } from "wagmi";
@@ -38,16 +38,16 @@ export default function Home() {
                 Manage children's allowances with blockchain-powered Sub Accounts and Spend Limits. Assign tasks, reward completion, and teach financial responsibility.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-                <Link href="/parent">
+                <WouterLink href="/parent">
                   <Button size="lg" className="bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white px-8">
                     Parent Dashboard
                   </Button>
-                </Link>
-                <Link href="/child">
+                </WouterLink>
+                <WouterLink href="/child">
                   <Button size="lg" variant="outline" className="text-white border-white hover:bg-white/10 px-8">
                     Child Dashboard
                   </Button>
-                </Link>
+                </WouterLink>
               </div>
             </div>
             
@@ -146,11 +146,11 @@ export default function Home() {
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               {isConnected ? (
                 <>
-                  <Link href="/parent">
+                  <WouterLink href="/parent">
                     <Button size="lg" className="bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white px-8">
                       Get Started
                     </Button>
-                  </Link>
+                  </WouterLink>
                 </>
               ) : (
                 <Button size="lg" className="bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white px-8" onClick={() => document.getElementById('connect-section')?.scrollIntoView({ behavior: 'smooth' })}>

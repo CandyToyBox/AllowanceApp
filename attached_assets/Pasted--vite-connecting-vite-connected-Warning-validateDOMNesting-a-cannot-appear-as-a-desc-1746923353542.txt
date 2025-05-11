@@ -1,0 +1,39 @@
+[vite] connecting...
+[vite] connected.
+Warning: validateDOMNesting(...): <a> cannot appear as a descendant of &lt;a&gt;.
+    at a
+    at a
+    at https://03b07729-b63c-4ef9-a2c6-20ff88a9e1fa-00-ku8saln9ym88.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=e5d6caa8:205:18
+    at div
+    at div
+    at nav
+    at Navbar
+    at div
+    at Layout (https://03b07729-b63c-4ef9-a2c6-20ff88a9e1fa-00-ku8saln9ym88.picard.replit.dev/src/App.tsx?t=1746919421362&v=vYFevIJM-GVRyFATyrN4h:106:19)
+    at Router
+    at Provider (https://03b07729-b63c-4ef9-a2c6-20ff88a9e1fa-00-ku8saln9ym88.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-UZCPGOF7.js?v=e5d6caa8:38:15)
+    at TooltipProvider (https://03b07729-b63c-4ef9-a2c6-20ff88a9e1fa-00-ku8saln9ym88.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-tooltip.js?v=e5d6caa8:2250:5)
+    at QueryClientProvider (https://03b07729-b63c-4ef9-a2c6-20ff88a9e1fa-00-ku8saln9ym88.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-YLTKP27R.js?v=e5d6caa8:2805:3)
+    at Hydrate (https://03b07729-b63c-4ef9-a2c6-20ff88a9e1fa-00-ku8saln9ym88.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wagmi.js?v=e5d6caa8:210:11)
+    at WagmiProvider (https://03b07729-b63c-4ef9-a2c6-20ff88a9e1fa-00-ku8saln9ym88.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wagmi.js?v=e5d6caa8:234:11)
+    at App
+at a
+at a
+at https://03b07729-b63c-4ef9-a2c6-20ff88a9e1fa-00-ku8saln9ym88.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=e5d6caa8:205:18
+at div
+at div
+at nav
+at Navbar
+at div
+at Layout (https://03b07729-b63c-4ef9-a2c6-20ff88a9e1fa-00-ku8saln9ym88.picard.replit.dev/src/App.tsx?t=1746919421362&amp;v=vYFevIJM-GVRyFATyrN4h:106:19)
+at Router
+at Provider (https://03b07729-b63c-4ef9-a2c6-20ff88a9e1fa-00-ku8saln9ym88.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-UZCPGOF7.js?v=e5d6caa8:38:15)
+at TooltipProvider (https://03b07729-b63c-4ef9-a2c6-20ff88a9e1fa-00-ku8saln9ym88.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-tooltip.js?v=e5d6caa8:2250:5)
+at QueryClientProvider (https://03b07729-b63c-4ef9-a2c6-20ff88a9e1fa-00-ku8saln9ym88.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-YLTKP27R.js?v=e5d6caa8:2805:3)
+at Hydrate (https://03b07729-b63c-4ef9-a2c6-20ff88a9e1fa-00-ku8saln9ym88.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wagmi.js?v=e5d6caa8:210:11)
+at WagmiProvider (https://03b07729-b63c-4ef9-a2c6-20ff88a9e1fa-00-ku8saln9ym88.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wagmi.js?v=e5d6caa8:234:11)
+at App
+at t.value (https://03b07729-b63c-4ef9-a2c6-20ff88a9e1fa-00-ku8saln9ym88.picard.replit.dev/__replco/static/devtools/eruda/3.2.3/eruda.js:2:17465)
+at new t (https://03b07729-b63c-4ef9-a2c6-20ff88a9e1fa-00-ku8saln9ym88.picard.replit.dev/__replco/static/devtools/eruda/3.2.3/eruda.js:2:12630)
+at t.value (https://03b07729-b63c-4ef9-a2c6-20ff88a9e1fa-00-ku8saln9ym88.picard.replit.dev/__replco/static/devtools/eruda/3.2.3/eruda.js:2:32766)
+at https://03b07729-b63c-4ef9-a2c6-20ff88a9e1fa-00-ku8saln9ym88.picard.replit.dev/__replco/static/devtools/eruda/3.2.3/eruda.js:2:34400

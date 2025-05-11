@@ -1,4 +1,4 @@
-import { Switch, Route, Link } from "wouter";
+import { Switch, Route, Link as WouterLink } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
@@ -23,24 +23,24 @@ function Navbar() {
               <line x1="12" y1="16" x2="12.01" y2="16"/>
             </svg>
           </div>
-          <Link href="/">
-            <a className="text-xl font-bold bg-gradient-to-r from-blue-200 to-purple-200 text-transparent bg-clip-text">
+          <WouterLink href="/">
+            <span className="text-xl font-bold bg-gradient-to-r from-blue-200 to-purple-200 text-transparent bg-clip-text cursor-pointer">
               AllowanceApp
-            </a>
-          </Link>
+            </span>
+          </WouterLink>
         </div>
         
         <div className="flex space-x-2">
-          <Link href="/parent">
+          <WouterLink href="/parent">
             <Button variant="ghost" className="text-white hover:bg-blue-800">
               Parent Dashboard
             </Button>
-          </Link>
-          <Link href="/child">
+          </WouterLink>
+          <WouterLink href="/child">
             <Button variant="ghost" className="text-white hover:bg-blue-800">
               Child Dashboard
             </Button>
-          </Link>
+          </WouterLink>
         </div>
       </div>
     </nav>
