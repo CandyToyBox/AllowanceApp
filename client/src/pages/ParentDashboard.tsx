@@ -95,8 +95,19 @@ const ParentDashboard = () => {
   
   // Create child mutation
   const createChildMutation = useMutation({
-    mutationFn: (childData: any) => apiRequest('POST', '/api/children', childData),
-    onSuccess: () => {
+    mutationFn: async (childData: any) => {
+      console.log("Calling API with data:", childData);
+      try {
+        const result = await apiRequest('POST', '/api/children', childData);
+        console.log("API result:", result);
+        return result;
+      } catch (error) {
+        console.error("API error:", error);
+        throw error;
+      }
+    },
+    onSuccess: (data) => {
+      console.log("Child created successfully:", data);
       queryClient.invalidateQueries({ queryKey: ['/api/parents', parent?.id, 'children'] });
       setAddChildOpen(false);
       toast({
@@ -106,6 +117,7 @@ const ParentDashboard = () => {
       childForm.reset();
     },
     onError: (error: any) => {
+      console.error("Error in mutation:", error);
       toast({
         title: "Error creating child account",
         description: error.message || "Failed to create child account. Please try again.",
@@ -234,12 +246,18 @@ const ParentDashboard = () => {
   
   // Handle child form submission
   const onChildSubmit = (values: z.infer<typeof createChildSchema>) => {
+    console.log("Form submitted with values:", values);
     if (parent?.id) {
-      createChildMutation.mutate({
+      console.log("Parent ID found:", parent.id);
+      const childData = {
         ...values,
         parentId: parent.id,
         allowanceBalance: 0
-      });
+      };
+      console.log("Submitting child data:", childData);
+      createChildMutation.mutate(childData);
+    } else {
+      console.error("Parent ID is missing");
     }
   };
   
