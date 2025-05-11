@@ -48,7 +48,7 @@ const ChildDashboard = () => {
     queryKey: ['/api/children/wallet', address],
     queryFn: () => 
       address ? 
-      apiRequest(`/api/children/wallet/${address}`, { on401: "returnNull" }) : 
+      apiRequest('GET', `/api/children/wallet/${address}`) : 
       Promise.resolve(null),
     enabled: !!address,
   });
@@ -56,14 +56,14 @@ const ChildDashboard = () => {
   // Fetch tasks
   const { data: tasks = [], isLoading: tasksLoading } = useQuery({
     queryKey: ['/api/children', child?.id, 'tasks'],
-    queryFn: () => apiRequest(`/api/children/${child?.id}/tasks`, { on401: "returnNull" }),
+    queryFn: () => apiRequest('GET', `/api/children/${child?.id}/tasks`),
     enabled: !!child?.id,
   });
   
   // Fetch transactions
   const { data: transactions = [], isLoading: transactionsLoading } = useQuery({
     queryKey: ['/api/children', child?.id, 'transactions'],
-    queryFn: () => apiRequest(`/api/children/${child?.id}/transactions`, { on401: "returnNull" }),
+    queryFn: () => apiRequest('GET', `/api/children/${child?.id}/transactions`),
     enabled: !!child?.id,
   });
   
@@ -91,15 +91,11 @@ const ChildDashboard = () => {
   
   // Spend allowance mutation
   const spendAllowanceMutation = useMutation({
-    mutationFn: (spendData: any) => apiRequest('/api/transactions', { 
-      method: 'POST',
-      body: JSON.stringify({
+    mutationFn: (spendData: any) => apiRequest('POST', '/api/transactions', {
         ...spendData,
         childId: child?.id,
         amount: -spendData.amount, // Negative amount for spending
       }),
-      headers: { 'Content-Type': 'application/json' }
-    }, { on401: "returnNull" }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/children', child?.id, 'transactions'] });
       queryClient.invalidateQueries({ queryKey: ['/api/children/wallet', address] });
