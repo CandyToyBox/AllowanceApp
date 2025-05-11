@@ -187,6 +187,27 @@ const ParentDashboard = () => {
     }
   });
   
+  // Update child wallet address mutation
+  const updateChildWalletMutation = useMutation({
+    mutationFn: ({ childId, walletAddress }: { childId: number, walletAddress: string }) => 
+      apiRequest('PATCH', `/api/children/${childId}/wallet`, { walletAddress }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/parents', parent?.id, 'children'] });
+      toast({
+        title: "Wallet linked",
+        description: "The child account has been linked to your wallet.",
+      });
+    },
+    onError: (error: any) => {
+      console.error("Error linking wallet:", error);
+      toast({
+        title: "Error linking wallet",
+        description: error.message || "Failed to link the wallet. Please try again.",
+        variant: "destructive",
+      });
+    }
+  });
+  
   // Child form
   const childForm = useForm<z.infer<typeof createChildSchema>>({
     resolver: zodResolver(createChildSchema),
@@ -597,15 +618,30 @@ const ParentDashboard = () => {
                         <p className="text-sm text-gray-500 dark:text-gray-400">Daily Spend Limit</p>
                         <p className="text-lg">{formatCurrency(child.spendLimit || 0)}</p>
                       </div>
-                      {child.walletAddress && (
-                        <div>
-                          <p className="text-sm text-gray-500 dark:text-gray-400">Sub Account Address</p>
+                      <div>
+                        <p className="text-sm text-gray-500 dark:text-gray-400">Sub Account Address</p>
+                        {child.walletAddress ? (
                           <p className="text-xs truncate">{child.walletAddress}</p>
-                        </div>
-                      )}
+                        ) : (
+                          <Button 
+                            variant="outline" 
+                            size="sm" 
+                            className="text-xs mt-1" 
+                            onClick={() => {
+                              // Link the child's account to the current wallet address
+                              updateChildWalletMutation.mutate({
+                                childId: child.id,
+                                walletAddress: address
+                              });
+                            }}
+                          >
+                            Link to Current Wallet
+                          </Button>
+                        )}
+                      </div>
                     </div>
                   </CardContent>
-                  <CardFooter className="border-t bg-gray-50 dark:bg-gray-800/50">
+                  <CardFooter className="border-t bg-gray-50 dark:bg-gray-800/50 flex gap-2">
                     <Button variant="outline" size="sm" className="w-full" onClick={() => setActiveTab("tasks")}>
                       Manage Tasks
                     </Button>

@@ -170,9 +170,28 @@ const ChildDashboard = () => {
                 <p className="text-sm text-indigo-200 mb-2">Connected Wallet</p>
                 <p className="text-md font-medium text-white break-all">{address}</p>
               </div>
-              <p className="text-center text-white">
-                Ask your parent to set up a child account for this wallet address.
-              </p>
+              <Alert variant="info" className="bg-blue-900/50 text-white border-blue-500">
+                <AlertTitle>Need to link your account?</AlertTitle>
+                <AlertDescription>
+                  If you already have an account, you need to link it to your wallet address.
+                  Go to the Parent Dashboard to link your existing child account to this wallet.
+                </AlertDescription>
+              </Alert>
+              <div className="flex flex-col gap-2">
+                <Button 
+                  className="w-full bg-gradient-to-r from-purple-500 to-indigo-500"
+                  onClick={() => setLocation("/")}
+                >
+                  Go to Home
+                </Button>
+                <Button 
+                  variant="outline" 
+                  className="w-full border-white/20 text-white hover:bg-white/10"
+                  onClick={() => setLocation("/parent")}
+                >
+                  Go to Parent Dashboard
+                </Button>
+              </div>
             </CardContent>
           </Card>
         </div>
