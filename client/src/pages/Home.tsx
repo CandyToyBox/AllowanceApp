@@ -44,7 +44,7 @@ export default function Home() {
                   </Button>
                 </WouterLink>
                 <WouterLink href="/child">
-                  <Button size="lg" variant="outline" className="text-white border-white hover:bg-white/10 px-8">
+                  <Button size="lg" variant="outline" className="bg-purple-600 text-white border-purple-400 hover:bg-purple-700 hover:border-purple-300 px-8">
                     Child Dashboard
                   </Button>
                 </WouterLink>
