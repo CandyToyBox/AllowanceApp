@@ -83,7 +83,7 @@ const ChildDashboard = () => {
       // If a file is provided, upload it first
       if (proofImage) {
         const formData = new FormData();
-        formData.append('file', proofImage);
+        formData.append('image', proofImage);
         
         // Upload the file
         const uploadResponse = await fetch('/api/upload', {
