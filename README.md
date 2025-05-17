@@ -2,6 +2,8 @@
 
 ![AllowanceApp Logo](public/logo.png)
 
+> **Empowering Families to Automate, Track, and Reward—Onchain.**
+
 AllowanceApp is a family-focused financial management platform that leverages Coinbase Smart Wallet technology to provide secure, controlled cryptocurrency transactions for parents and children on the Base blockchain. It combines traditional allowance management with blockchain technology to create an educational and secure financial experience.
 
 ## Features
