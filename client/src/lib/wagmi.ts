@@ -5,18 +5,18 @@ import { parseEther, toHex } from "viem";
  
 export function getConfig() {
   return createConfig({
-    chains: [baseSepolia, base],
+    chains: [base],
     connectors: [
       coinbaseWallet({
         appName: "Smart Wallet Sub Account Demo",
         preference: {
-          keysUrl: "https://keys-dev.coinbase.com/connect",
+          keysUrl: "https://keys.coinbase.com/connect",
           options: "smartWalletOnly",
         },
         subAccounts: {
           enableAutoSubAccounts: true,
           defaultSpendLimits: {
-            84532: [ // Base Sepolia Chain ID
+            8453: [ // Base Mainnet Chain ID
               {
                 token: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
                 allowance: toHex(parseEther('0.01')), // 0.01 ETH
