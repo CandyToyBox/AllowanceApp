@@ -1,85 +1,118 @@
-# Coinbase Smart Wallet with Sub Accounts and Spend Limits Demo
+# AllowanceApp - Web3 Allowance Management for Families
 
-This application demonstrates the integration of Coinbase Smart Wallet with Sub Accounts and Spend Limits on the Base blockchain. It allows users to connect their Smart Wallet, create and manage spend limits, sign messages, and send transactions.
+![AllowanceApp Logo](public/logo.png)
+
+AllowanceApp is a family-focused financial management platform that leverages Coinbase Smart Wallet technology to provide secure, controlled cryptocurrency transactions for parents and children on the Base blockchain. It combines traditional allowance management with blockchain technology to create an educational and secure financial experience.
 
 ## Features
 
-### 1. Wallet Connection
-- Connect to Coinbase Smart Wallet with Sub Accounts
-- View wallet details (address, chain ID)
-- Disconnect functionality
-- Proper error handling for wallet connections
+### 1. Parent Dashboard
+- Create and manage child accounts with customizable allowances
+- Create task-based incentives with monetary rewards
+- Set spending limits for children using Sub Account technology
+- Review and approve/reject task completion proofs
+- Monitor transaction history for all children's accounts
+- Connect parent wallet to manage the entire family's finances
 
-### 2. Spend Limits
-- Create spend limits for third-party spenders
-- Authorize a recurring spending allowance (0.01 ETH per day)
-- Sign spend limit permissions using EIP-712 typed data signatures
-- Collect subscription payments without requiring additional signatures
+### 2. Child Dashboard
+- View assigned tasks and upload proof of completion with images
+- Track personal allowance balance and transaction history
+- Spend allowance within parent-defined limits
+- View task status (pending, completed, approved, rejected)
+- Connect to child Sub Account wallet
 
-### 3. Wallet Actions
-- Sign messages to verify wallet ownership
-- Send transactions to other addresses
-- View transaction history and status
+### 3. Web3 Wallet Integration
+- Secure connection to Coinbase Smart Wallet
+- Sub Account setup for children with Parent Account as the owner
+- Spend Limits for controlled transactions
+- Blockchain-based transaction history
+- Direct transfers to child accounts upon task completion
+
+### 4. Task Management System
+- Create tasks with titles, descriptions, and reward amounts
+- Set task due dates
+- Submit visual proof of task completion via image uploads
+- Automatic notification of task status changes
+- Reward disbursement upon task approval
 
 ## Technology Stack
 
-- **Frontend**: React.js with Vite
-- **Backend**: Express.js
-- **Blockchain Interaction**: Wagmi hooks and Viem
-- **UI Components**: Shadcn UI components
-- **State Management**: React Query
-- **Network**: Base Sepolia testnet
+- **Frontend**: React with TypeScript
+- **Backend**: Express.js with TypeScript
+- **Database**: PostgreSQL with Drizzle ORM
+- **Blockchain**: Base Network with Viem/Wagmi
+- **File Storage**: Local file system with automatic cleanup
+- **UI Components**: Tailwind CSS with Shadcn UI components
+- **Authentication**: Wallet-based authentication
+- **State Management**: TanStack React Query
 
-## How It Works
+## Database Schema
 
-### Smart Wallet Integration
-The application uses Wagmi hooks to connect to Coinbase Smart Wallet with Sub Accounts. The wallet connection is managed through the WalletConnection component, which handles the connection state and displays the user's wallet address.
+The application uses a PostgreSQL database with the following schema:
 
-### Spend Limits
-1. Users connect their Smart Wallet
-2. They authorize a spend limit (0.01 ETH per day) by signing a permission with their wallet
-3. This creates a recurring allowance that the spender can collect from without requiring additional signatures
-4. The SpendLimits component manages this flow and displays transaction history
+- **Users**: Basic authentication information
+- **Parents**: Parent account profiles linked to wallet addresses
+- **Children**: Child accounts with allowance balances and spend limits
+- **Tasks**: Assignments with rewards, due dates, and completion status
+- **Transactions**: Record of allowance expenditures
 
-### Backend Integration
-The server-side code handles the collection of subscriptions by:
-1. Receiving the signed permission and signature
-2. For demo purposes, it simulates a transaction instead of actually calling the blockchain
-3. Returns a transaction hash and metadata for display in the UI
+## Workflow
 
-## Project Structure
+### Parent Workflow
+1. Parent connects wallet and creates child accounts
+2. Parent assigns tasks with reward amounts and due dates
+3. Parent reviews submitted proofs and approves/rejects task completion
+4. Parent can monitor all transactions and adjust allowances
 
-```
-├── client
-│   ├── src
-│   │   ├── components       # UI components
-│   │   ├── hooks            # Custom React hooks
-│   │   ├── lib              # Utility functions and configuration
-│   │   │   ├── abi          # Smart contract ABIs
-│   │   ├── pages            # Page components
-├── server
-│   ├── lib                  # Server utilities
-│   ├── routes.ts            # API endpoints
-```
+### Child Workflow
+1. Child connects wallet to view assigned tasks
+2. Child completes tasks and submits photo proof
+3. Upon parent approval, reward is automatically added to allowance
+4. Child can spend allowance within preset limits
 
-## Smart Contract Information
+## Image Upload Functionality
 
-The application interacts with the SpendPermissionManager contract on Base Sepolia:
-- Contract Address: `0x000000000022D473030F116dDEE9F6B43aC78BA3`
-- This contract manages the spend permissions and allows for subscription-like payments
+- Secure image upload for task proof submission
+- File type validation (images only)
+- Automatic image deletion after task approval/rejection
+- Size limits to prevent abuse
 
-## Getting Started
+## Installation and Setup
 
 1. Clone the repository
 2. Install dependencies: `npm install`
-3. Start the development server: `npm run dev`
-4. Connect your Coinbase Smart Wallet
-5. Authorize a spend limit
-6. Collect subscription payments without additional signatures
+3. Set up PostgreSQL database
+4. Run migrations: `npm run db:push`
+5. Start the development server: `npm run dev`
 
-## Development Notes
+## Environment Variables
 
-- The application uses lowercase addresses to ensure compatibility with Viem's strict address validation
-- For demo purposes, a hardcoded spender address is used in client-side code
-- In a production environment, environment variables would be properly configured
-- The server simulates subscription collection without actually calling the blockchain
+The application requires the following environment variables:
+
+```
+DATABASE_URL=postgresql://user:password@localhost:5432/allowanceapp
+```
+
+## Security Features
+
+- Wallet-based authentication for secure access
+- Parent-controlled spend limits for child accounts
+- Server-side validation of all transactions
+- Secure image upload with file type verification
+- Automatic cleanup of uploaded files
+
+## Deployment
+
+The application is designed to be deployed on Replit, with automatic configuration handling.
+
+## Future Enhancements
+
+- Mobile app with push notifications
+- Multi-currency support
+- Goal-setting and savings features
+- Educational content about financial literacy
+- Additional parental controls and monitoring
+
+## License
+
+This project is available under the MIT License.
