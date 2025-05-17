@@ -10,6 +10,7 @@ import ChildDashboard from "@/pages/ChildDashboard";
 import { WagmiProvider } from "wagmi";
 import { getConfig } from "./lib/wagmi";
 import { Button } from "@/components/ui/button";
+import logoImage from "./assets/logo.png";
 
 function Navbar() {
   return (
@@ -18,7 +19,7 @@ function Navbar() {
         <div className="flex items-center space-x-2 mb-4 md:mb-0">
           <WouterLink href="/">
             <div className="flex items-center gap-2">
-              <img src="/images/logo.png" alt="AllowanceApp Logo" className="w-10 h-10" />
+              <img src={logoImage} alt="AllowanceApp Logo" className="w-10 h-10" />
               <span className="text-xl font-bold bg-gradient-to-r from-yellow-300 to-purple-400 text-transparent bg-clip-text cursor-pointer">
                 AllowanceApp
               </span>
