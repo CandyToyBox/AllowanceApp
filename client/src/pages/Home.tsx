@@ -56,9 +56,7 @@ export default function Home() {
               <div className="absolute -top-4 -right-4 h-24 w-24 bg-gradient-to-br from-pink-500 to-purple-500 rounded-full opacity-30 blur-2xl"></div>
               <div className="mb-6">
                 <div className="flex justify-center mb-4">
-                  <div className="w-36 h-36 rounded-full bg-gradient-to-r from-yellow-500 to-purple-500 flex items-center justify-center p-4">
-                    <span className="text-3xl font-bold text-white">AllowanceApp</span>
-                  </div>
+                  <img src="/images/logo-transparent.png" alt="AllowanceApp Logo" className="h-36 w-auto" />
                 </div>
                 <h3 className="text-2xl font-bold text-center text-white">Connect Your Wallet</h3>
                 <p className="text-blue-200 text-center mt-2">

@@ -19,8 +19,8 @@ function Navbar() {
         <div className="flex items-center space-x-2 mb-4 md:mb-0">
           <WouterLink href="/">
             <div className="flex items-center gap-2">
-              <div className="w-10 h-10 rounded-full bg-gradient-to-r from-yellow-500 to-purple-500"></div>
-              <span className="text-xl font-bold bg-gradient-to-r from-yellow-300 to-purple-400 text-transparent bg-clip-text cursor-pointer">
+              <img src="/images/logo-transparent.png" alt="AllowanceApp Logo" className="h-10 w-auto" />
+              <span className="text-xl font-bold text-white cursor-pointer">
                 AllowanceApp
               </span>
             </div>
