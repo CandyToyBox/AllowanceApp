@@ -16,17 +16,13 @@ function Navbar() {
     <nav className="bg-gradient-to-r from-blue-950 to-indigo-900 text-white p-4 shadow-md">
       <div className="container mx-auto flex flex-col md:flex-row justify-between items-center">
         <div className="flex items-center space-x-2 mb-4 md:mb-0">
-          <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-500 rounded-full flex items-center justify-center">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <circle cx="12" cy="12" r="10"/>
-              <line x1="12" y1="8" x2="12" y2="12"/>
-              <line x1="12" y1="16" x2="12.01" y2="16"/>
-            </svg>
-          </div>
           <WouterLink href="/">
-            <span className="text-xl font-bold bg-gradient-to-r from-blue-200 to-purple-200 text-transparent bg-clip-text cursor-pointer">
-              AllowanceApp
-            </span>
+            <div className="flex items-center gap-2">
+              <img src="/images/logo.png" alt="AllowanceApp Logo" className="w-10 h-10" />
+              <span className="text-xl font-bold bg-gradient-to-r from-yellow-300 to-purple-400 text-transparent bg-clip-text cursor-pointer">
+                AllowanceApp
+              </span>
+            </div>
           </WouterLink>
         </div>
         

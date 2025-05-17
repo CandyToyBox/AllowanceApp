@@ -55,12 +55,7 @@ export default function Home() {
               <div className="absolute -top-4 -right-4 h-24 w-24 bg-gradient-to-br from-pink-500 to-purple-500 rounded-full opacity-30 blur-2xl"></div>
               <div className="mb-6">
                 <div className="flex justify-center mb-4">
-                  <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-500 rounded-full flex items-center justify-center shadow-lg">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z" />
-                      <circle cx="12" cy="13" r="3" />
-                    </svg>
-                  </div>
+                  <img src="/images/logo.png" alt="AllowanceApp Logo" className="w-36 h-36" />
                 </div>
                 <h3 className="text-2xl font-bold text-center text-white">Connect Your Wallet</h3>
                 <p className="text-blue-200 text-center mt-2">

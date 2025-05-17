@@ -806,7 +806,7 @@ const ChildDashboard = () => {
                         task.status === 'rejected' ? 'destructive' : 
                         'default'
                       }>
-                        {task.status.charAt(0).toUpperCase() + task.status.slice(1)}
+                        {task.status ? task.status.charAt(0).toUpperCase() + task.status.slice(1) : 'Pending'}
                       </Badge>
                     </div>
                   </div>
