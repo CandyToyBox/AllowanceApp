@@ -207,7 +207,7 @@ const ChildDashboard = () => {
                 <p className="text-sm text-indigo-200 mb-2">Connected Wallet</p>
                 <p className="text-md font-medium text-white break-all">{address}</p>
               </div>
-              <Alert variant="info" className="bg-blue-900/50 text-white border-blue-500">
+              <Alert className="bg-blue-900/50 text-white border-blue-500">
                 <AlertTitle>Need to link your account?</AlertTitle>
                 <AlertDescription>
                   If you already have an account, you need to link it to your wallet address.
@@ -758,7 +758,7 @@ const ChildDashboard = () => {
   );
   
   // Helper function to render task list
-  function renderTaskList(taskList: any[]) {
+  function renderTaskList(taskList: Task[]) {
     if (tasksLoading) {
       return (
         <div className="py-6 text-center text-gray-500 dark:text-gray-400">
@@ -781,7 +781,7 @@ const ChildDashboard = () => {
     
     return (
       <div className="space-y-4">
-        {taskList.map((task: any) => (
+        {taskList.map((task: Task) => (
           <Card key={task.id} className="overflow-hidden">
             <div className="flex">
               <div className={`w-2 ${
