@@ -1,8 +1,10 @@
-import type { Express, Request, Response } from "express";
+import express, { Express, Request, Response, NextFunction } from "express";
 import { createServer, type Server } from "http";
+import path from "path";
 import { storage } from "./storage";
 import { getPublicClient, getSpenderWalletClient } from "./lib/spender";
 import { collectSubscription } from "./lib/collectSubscription";
+import { upload, deleteFile, getFilenameFromPath } from "./lib/fileUpload";
 import { z } from "zod";
 import {
   insertParentSchema,
@@ -13,6 +15,27 @@ import {
 import { eq } from "drizzle-orm";
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Serve uploaded files
+  app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')));
+  
+  // File upload endpoint
+  app.post("/api/upload", upload.single('image'), (req, res) => {
+    try {
+      if (!req.file) {
+        return res.status(400).json({ message: "No file uploaded" });
+      }
+      
+      const imageUrl = `/uploads/${req.file.filename}`;
+      res.status(200).json({ 
+        imageUrl,
+        message: "File uploaded successfully" 
+      });
+    } catch (error: any) {
+      console.error("Error uploading file:", error);
+      res.status(500).json({ message: error.message || "Error uploading file" });
+    }
+  });
+  
   // Collect subscription endpoint
   app.post("/api/collect", async (req, res) => {
     try {
@@ -278,7 +301,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ message: "Task not found" });
       }
       
-      res.status(200).json(updatedTask);
+      // Also mark the task as completed
+      const completedTask = await storage.completeTask(Number(id));
+      
+      res.status(200).json(completedTask || updatedTask);
     } catch (error: any) {
       console.error("Error updating task proof image:", error);
       res.status(500).json({ message: error.message || "Internal server error" });
@@ -290,10 +316,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { id } = req.params;
       
+      // Get the task first to see if it has an image
+      const task = await storage.getTask(Number(id));
+      if (!task) {
+        return res.status(404).json({ message: "Task not found" });
+      }
+      
+      // Approve the task
       const updatedTask = await storage.approveTask(Number(id));
       
       if (!updatedTask) {
-        return res.status(404).json({ message: "Task not found" });
+        return res.status(404).json({ message: "Task could not be approved" });
+      }
+      
+      // If the task had a proof image URL and it's in our uploads directory, delete it
+      if (task.proofImageUrl && task.proofImageUrl.startsWith('/uploads/')) {
+        const filename = getFilenameFromPath(task.proofImageUrl);
+        deleteFile(filename);
+        console.log(`Deleted proof image ${filename} after task approval`);
       }
       
       res.status(200).json(updatedTask);
