@@ -23,7 +23,11 @@ import SpendLimits from "@/components/SpendLimits";
 
 // Form schema for submitting task proof
 const submitProofSchema = z.object({
-  proofImageUrl: z.string().url("Please enter a valid image URL"),
+  proofImage: z.instanceof(File).optional(),
+  proofImageUrl: z.string().optional(),
+}).refine((data) => data.proofImage || data.proofImageUrl, {
+  message: "Either upload an image or provide an image URL",
+  path: ['proofImage'],
 });
 
 // Form schema for spending allowance
@@ -69,8 +73,38 @@ const ChildDashboard = () => {
   
   // Submit proof mutation
   const submitProofMutation = useMutation({
-    mutationFn: ({ taskId, proofImageUrl }: { taskId: number, proofImageUrl: string }) => 
-      apiRequest('PATCH', `/api/tasks/${taskId}/proof`, { proofImageUrl }),
+    mutationFn: async ({ taskId, proofImage, proofImageUrl }: { 
+      taskId: number, 
+      proofImage?: File, 
+      proofImageUrl?: string 
+    }) => {
+      // If a file is provided, upload it first
+      if (proofImage) {
+        const formData = new FormData();
+        formData.append('file', proofImage);
+        
+        // Upload the file
+        const uploadResponse = await fetch('/api/upload', {
+          method: 'POST',
+          body: formData,
+        });
+        
+        if (!uploadResponse.ok) {
+          const errorData = await uploadResponse.json();
+          throw new Error(errorData.message || 'Failed to upload image');
+        }
+        
+        const { filePath } = await uploadResponse.json();
+        
+        // Now update the task with the file path
+        return apiRequest('PATCH', `/api/tasks/${taskId}/proof`, { proofImageUrl: filePath });
+      } else if (proofImageUrl) {
+        // Use the provided URL
+        return apiRequest('PATCH', `/api/tasks/${taskId}/proof`, { proofImageUrl });
+      } else {
+        throw new Error('Either an image file or URL must be provided');
+      }
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/children', child?.id, 'tasks'] });
       setIsProofDialogOpen(false);
@@ -233,6 +267,7 @@ const ChildDashboard = () => {
     if (selectedTask?.id) {
       submitProofMutation.mutate({
         taskId: selectedTask.id,
+        proofImage: values.proofImage,
         proofImageUrl: values.proofImageUrl,
       });
     }
@@ -576,7 +611,38 @@ const ChildDashboard = () => {
               </DialogHeader>
               
               <Form {...proofForm}>
-                <form onSubmit={proofForm.handleSubmit(onProofSubmit)} className="space-y-4">
+                <form onSubmit={proofForm.handleSubmit(onProofSubmit)} className="space-y-4" encType="multipart/form-data">
+                  <FormField
+                    control={proofForm.control}
+                    name="proofImage"
+                    render={({ field: { value, onChange, ...fieldProps } }) => (
+                      <FormItem>
+                        <FormLabel>Upload Image</FormLabel>
+                        <FormControl>
+                          <Input 
+                            type="file" 
+                            accept="image/*"
+                            onChange={(e) => {
+                              const file = e.target.files?.[0] || null;
+                              onChange(file);
+                            }}
+                            {...fieldProps}
+                          />
+                        </FormControl>
+                        <FormDescription>
+                          Take a photo or select an image showing your completed task
+                        </FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  
+                  <div className="flex items-center justify-center my-2">
+                    <Separator className="flex-grow" />
+                    <span className="mx-2 text-sm text-muted-foreground">OR</span>
+                    <Separator className="flex-grow" />
+                  </div>
+                  
                   <FormField
                     control={proofForm.control}
                     name="proofImageUrl"
@@ -587,7 +653,7 @@ const ChildDashboard = () => {
                           <Input placeholder="https://example.com/my-image.jpg" {...field} />
                         </FormControl>
                         <FormDescription>
-                          Upload your image to an image hosting service and paste the URL here
+                          If you already have an image online, paste its URL here
                         </FormDescription>
                         <FormMessage />
                       </FormItem>

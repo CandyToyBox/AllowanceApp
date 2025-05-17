@@ -348,10 +348,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { id } = req.params;
       
+      // Get the task first to see if it has an image
+      const task = await storage.getTask(Number(id));
+      if (!task) {
+        return res.status(404).json({ message: "Task not found" });
+      }
+      
       const updatedTask = await storage.rejectTask(Number(id));
       
       if (!updatedTask) {
-        return res.status(404).json({ message: "Task not found" });
+        return res.status(404).json({ message: "Task could not be rejected" });
+      }
+      
+      // If the task had a proof image URL and it's in our uploads directory, delete it
+      if (task.proofImageUrl && task.proofImageUrl.startsWith('/uploads/')) {
+        const filename = getFilenameFromPath(task.proofImageUrl);
+        deleteFile(filename);
+        console.log(`Deleted proof image ${filename} after task rejection`);
       }
       
       res.status(200).json(updatedTask);
