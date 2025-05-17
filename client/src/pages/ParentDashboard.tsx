@@ -259,7 +259,7 @@ const ParentDashboard = () => {
         username: `parent_${address.slice(2, 8)}`,
         password: `pass_${address.slice(2, 10)}`,
         name: "Parent",
-        email: "",
+        email: `parent_${address.slice(2, 10)}@allowanceapp.com`,
         walletAddress: address,
       });
     }
