@@ -91,15 +91,17 @@ const ChildDashboard = () => {
           body: formData,
         });
         
+        // Parse the response once
+        const responseData = await uploadResponse.json();
+        
         if (!uploadResponse.ok) {
-          const errorData = await uploadResponse.json();
-          throw new Error(errorData.message || 'Failed to upload image');
+          throw new Error(responseData.message || 'Failed to upload image');
         }
         
-        const { filePath } = await uploadResponse.json();
+        const { imageUrl } = responseData;
         
         // Now update the task with the file path
-        return apiRequest('PATCH', `/api/tasks/${taskId}/proof`, { proofImageUrl: filePath });
+        return apiRequest('PATCH', `/api/tasks/${taskId}/proof`, { proofImageUrl: imageUrl });
       } else if (proofImageUrl) {
         // Use the provided URL
         return apiRequest('PATCH', `/api/tasks/${taskId}/proof`, { proofImageUrl });
