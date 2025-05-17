@@ -3,6 +3,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { useLocation } from "wouter";
+import type { Task } from "@shared/schema";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -11,6 +12,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Separator } from "@/components/ui/separator";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -154,6 +156,7 @@ const ChildDashboard = () => {
     resolver: zodResolver(submitProofSchema),
     defaultValues: {
       proofImageUrl: "",
+      proofImage: undefined,
     },
   });
   
@@ -606,7 +609,7 @@ const ChildDashboard = () => {
               <DialogHeader>
                 <DialogTitle>Submit Proof of Completion</DialogTitle>
                 <DialogDescription>
-                  Upload an image link as proof for completing "{selectedTask.title}"
+                  Upload an image or provide a link as proof for completing "{selectedTask.title}"
                 </DialogDescription>
               </DialogHeader>
               
@@ -796,8 +799,8 @@ const ChildDashboard = () => {
                         {formatCurrency(task.rewardAmount)}
                       </span>
                       <Badge variant={
-                        task.status === 'completed' ? 'warning' : 
-                        task.status === 'approved' ? 'success' : 
+                        task.status === 'completed' ? 'outline' : 
+                        task.status === 'approved' ? 'secondary' : 
                         task.status === 'rejected' ? 'destructive' : 
                         'default'
                       }>
